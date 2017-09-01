@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-    "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type Site struct {
@@ -11,11 +11,36 @@ type Site struct {
 	expected string
 }
 
+type Result struct {
+	label        string
+	check_result string
+}
+
+var sites []Site
+
 func main() {
 
 	/* initialize array (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go) */
+	initialize_sites()
 
-	var sites = []Site{
+	// sites_check_result = check_sites( sites )
+
+	fmt.Println(sites)
+	fmt.Println("---")
+	// fmt.Println(sites[0])
+	fmt.Printf("%+v\n", sites) // adding `%+v` prints the field-names
+	fmt.Println("---")
+	spew.Dump(sites)
+	fmt.Println("---")
+
+} // end func main()
+
+/* ----------------------------------------------------------------------
+   helper functions
+   ---------------------------------------------------------------------- */
+
+func initialize_sites() []Site {
+	sites = []Site{
 		Site{
 			label:    "repo_file",
 			url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
@@ -49,13 +74,8 @@ func main() {
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"hi"},
 	}
+	return sites
+}
 
-	fmt.Println(sites)
-    fmt.Println( "---" )
-	// fmt.Println(sites[0])
-	fmt.Printf("%+v\n", sites) // adding `%+v` prints the field-names
-    fmt.Println( "---" )
-    spew.Dump(sites)
-    fmt.Println( "---" )
-
-} // end func main()
+// func check_sites( sites [] ) sites_check_result Result {
+// }
