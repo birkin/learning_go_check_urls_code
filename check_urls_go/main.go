@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
+    "io/ioutil"
+	// "github.com/davecgh/go-spew/spew"
+	"net/http"
 )
 
 type Site struct {
@@ -22,14 +24,14 @@ var results []Result // same as above
 func main() {
 	initialize_sites() // initialize array (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	check_sites(sites) // do the work
-    /* print stuff */
-	fmt.Println(sites)
-	fmt.Println("---")
-	// fmt.Println(sites[0])
-	fmt.Printf("%+v\n", sites) // adding `%+v` prints the field-names
-	fmt.Println("---")
-	spew.Dump(sites)
-	fmt.Println("---")
+	/* print stuff */
+	// fmt.Println("plain sites -- ", sites)
+	// fmt.Println("---")
+	// mt.Printf("sites with labels, -- %+v\n", sites) // adding `%+v` prints the field-names
+	// fmt.Println("---")
+	// fmt.Println("dump...")
+	// spew.Dump(sites)
+	// fmt.Println("---")
 
 } // end func main()
 
@@ -80,4 +82,14 @@ func check_sites(sites []Site) {
 		fmt.Println("element...")
 		fmt.Println(element)
 	}
+	resp, _ := http.Get("https://example.com/")
+	fmt.Println("response -- ", resp)
+	fmt.Println("status code -- ", resp.StatusCode)
+	// fmt.Println("body -- ", resp.Body)
+ //    fmt.Println("body2 -- ", resp.Body)
+
+    body_bytes, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("body_bytes -- ", body_bytes)
+    text := string(body_bytes)
+    fmt.Println("body -- ", text)
 }
