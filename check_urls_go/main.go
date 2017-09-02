@@ -16,15 +16,13 @@ type Result struct {
 	check_result string
 }
 
-var sites []Site
+var sites []Site     // i think this is declaring a slice, not an array
+var results []Result // same as above
 
 func main() {
-
-	/* initialize array (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go) */
-	initialize_sites()
-
-	// sites_check_result = check_sites( sites )
-
+	initialize_sites() // initialize array (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
+	check_sites(sites) // do the work
+    /* print stuff */
 	fmt.Println(sites)
 	fmt.Println("---")
 	// fmt.Println(sites[0])
@@ -77,5 +75,9 @@ func initialize_sites() []Site {
 	return sites
 }
 
-// func check_sites( sites [] ) sites_check_result Result {
-// }
+func check_sites(sites []Site) {
+	for element := range sites {
+		fmt.Println("element...")
+		fmt.Println(element)
+	}
+}
