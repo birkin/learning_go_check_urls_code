@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	// "github.com/davecgh/go-spew/spew"
 	"net/http"
+    // "strings"
     "time"
 )
 
@@ -82,10 +83,11 @@ func initialize_sites() []Site {
 
 func check_sites(sites []Site) {
     total_start := time.Now()
-	for element := range sites {
+	for site_element := range sites {
 		start := time.Now()
-		fmt.Println("element...")
-		fmt.Println(element)
+		// fmt.Println("element...")
+		// fmt.Println(element)
+        fmt.Println( "site_element.label, ", sites[site_element].label )
 		elapsed := time.Since(start)
 		fmt.Println("elapsed, ", elapsed)
 	}
@@ -110,3 +112,6 @@ func check_sites(sites []Site) {
 // 	elapsed := time.Since(start)
 // 	fmt.Printf("%s took %s\n", name, elapsed)
 // }
+
+
+// if strings.Contains(str, subStr) {}
