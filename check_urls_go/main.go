@@ -121,10 +121,10 @@ func check_sites(sites []Site) {
 	// fmt.Println("body_bytes -- ", body_bytes)
 	// text := string(body_bytes)
 	// fmt.Println("body -- ", text)
-    fmt.Println( "\n results..." )
-    spew.Dump(results)
 	total_elapsed := time.Since(total_start)
 	fmt.Println("total_elapsed, ", total_elapsed)
+    fmt.Println( "\n results..." )
+    spew.Dump(results)
 	// above may not handle non-ascii characters: <https://stackoverflow.com/a/38808838> -- update, it appears to handle non-ascii characters fine
 }
 
