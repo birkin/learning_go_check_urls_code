@@ -88,7 +88,7 @@ func check_sites(sites []Site) {
 	total_start := time.Now()
 	for _, site_element := range sites {
 		start := time.Now()
-		fmt.Println("site -- ", site_element.label)
+		fmt.Println("\nsite -- ", site_element.label)
 		resp, _ := http.Get(site_element.url)
 		fmt.Println("status code -- ", resp.StatusCode)
 		body_bytes, _ := ioutil.ReadAll(resp.Body)
@@ -100,10 +100,18 @@ func check_sites(sites []Site) {
 		fmt.Println("site_check_result, ", site_check_result)
 		elapsed := time.Since(start)
 		fmt.Println("elapsed, ", elapsed)
+
+        result_instance := Result{
+            label: site_element.label,
+            check_result: site_check_result,
+        }
+        fmt.Println( "result_instance.check_result, ", result_instance.check_result )
+        // append( results, Result )
+
 	}
-	resp, _ := http.Get("https://library.brown.edu/bjd/internationalization.html")
-	fmt.Println("response -- ", resp)
-	fmt.Println("status code -- ", resp.StatusCode)
+	// resp, _ := http.Get("https://library.brown.edu/bjd/internationalization.html")
+	// fmt.Println("response -- ", resp)
+	// fmt.Println("status code -- ", resp.StatusCode)
 	// fmt.Println("body -- ", resp.Body)
 	// fmt.Println("body2 -- ", resp.Body)
 
