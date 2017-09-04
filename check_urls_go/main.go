@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 	"net/http"
 	"strings"
 	"time"
@@ -34,6 +34,7 @@ func main() {
 	// fmt.Println("dump...")
 	// spew.Dump(sites)
 	// fmt.Println("---")
+
 
 } // end func main()
 
@@ -106,7 +107,8 @@ func check_sites(sites []Site) {
             check_result: site_check_result,
         }
         fmt.Println( "result_instance.check_result, ", result_instance.check_result )
-        // append( results, Result )
+        results = append( results, result_instance )
+
 
 	}
 	// resp, _ := http.Get("https://library.brown.edu/bjd/internationalization.html")
@@ -115,10 +117,12 @@ func check_sites(sites []Site) {
 	// fmt.Println("body -- ", resp.Body)
 	// fmt.Println("body2 -- ", resp.Body)
 
-	body_bytes, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("body_bytes -- ", body_bytes)
-	text := string(body_bytes)
-	fmt.Println("body -- ", text)
+	// body_bytes, _ := ioutil.ReadAll(resp.Body)
+	// fmt.Println("body_bytes -- ", body_bytes)
+	// text := string(body_bytes)
+	// fmt.Println("body -- ", text)
+    fmt.Println( "\n results..." )
+    spew.Dump(results)
 	total_elapsed := time.Since(total_start)
 	fmt.Println("total_elapsed, ", total_elapsed)
 	// above may not handle non-ascii characters: <https://stackoverflow.com/a/38808838> -- update, it appears to handle non-ascii characters fine
