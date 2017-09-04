@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	// "github.com/davecgh/go-spew/spew"
 	"net/http"
+    "time"
 )
 
 type Site struct {
@@ -80,9 +81,13 @@ func initialize_sites() []Site {
 }
 
 func check_sites(sites []Site) {
+    total_start := time.Now()
 	for element := range sites {
+		start := time.Now()
 		fmt.Println("element...")
 		fmt.Println(element)
+		elapsed := time.Since(start)
+		fmt.Println("elapsed, ", elapsed)
 	}
 	resp, _ := http.Get("https://library.brown.edu/bjd/internationalization.html")
 	fmt.Println("response -- ", resp)
@@ -94,6 +99,14 @@ func check_sites(sites []Site) {
 	fmt.Println("body_bytes -- ", body_bytes)
 	text := string(body_bytes)
 	fmt.Println("body -- ", text)
-
-	// above may not handle non-ascii characters: <https://stackoverflow.com/a/38808838>
+    total_elapsed := time.Since(total_start)
+    fmt.Println("total_elapsed, ", total_elapsed)
+	// above may not handle non-ascii characters: <https://stackoverflow.com/a/38808838> -- update, it appears to handle non-ascii characters fine
 }
+
+// defer timeTrack(time.Now(), "lookup-and-check")
+
+// func timeTrack(start time.Time, name string) {
+// 	elapsed := time.Since(start)
+// 	fmt.Printf("%s took %s\n", name, elapsed)
+// }
