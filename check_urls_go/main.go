@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	// "github.com/davecgh/go-spew/spew"
 	"net/http"
-    // "strings"
-    "time"
+	"strings"
+	"time"
 )
 
 type Site struct {
@@ -77,17 +77,27 @@ func initialize_sites() []Site {
 		Site{"iip_processor",
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"hi"},
+		Site{"not_found_test",
+			"https://apps.library.brown.edu/iip_processor/info/",
+			"foo"},
 	)
 	return sites
 }
 
 func check_sites(sites []Site) {
-    total_start := time.Now()
-	for site_element := range sites {
+	total_start := time.Now()
+	for _, site_element := range sites {
 		start := time.Now()
-		// fmt.Println("element...")
-		// fmt.Println(element)
-        fmt.Println( "site_element.label, ", sites[site_element].label )
+		fmt.Println("site -- ", site_element.label)
+		resp, _ := http.Get(site_element.url)
+		fmt.Println("status code -- ", resp.StatusCode)
+		body_bytes, _ := ioutil.ReadAll(resp.Body)
+		text := string(body_bytes)
+		var site_check_result string = "not_found"
+		if strings.Contains(text, site_element.expected) {
+			site_check_result = "found"
+		}
+		fmt.Println("site_check_result, ", site_check_result)
 		elapsed := time.Since(start)
 		fmt.Println("elapsed, ", elapsed)
 	}
@@ -101,8 +111,8 @@ func check_sites(sites []Site) {
 	fmt.Println("body_bytes -- ", body_bytes)
 	text := string(body_bytes)
 	fmt.Println("body -- ", text)
-    total_elapsed := time.Since(total_start)
-    fmt.Println("total_elapsed, ", total_elapsed)
+	total_elapsed := time.Since(total_start)
+	fmt.Println("total_elapsed, ", total_elapsed)
 	// above may not handle non-ascii characters: <https://stackoverflow.com/a/38808838> -- update, it appears to handle non-ascii characters fine
 }
 
@@ -112,6 +122,5 @@ func check_sites(sites []Site) {
 // 	elapsed := time.Since(start)
 // 	fmt.Printf("%s took %s\n", name, elapsed)
 // }
-
 
 // if strings.Contains(str, subStr) {}
