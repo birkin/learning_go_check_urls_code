@@ -5,7 +5,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"io/ioutil"
 	"net/http"
-    "reflect"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -19,7 +19,7 @@ type Site struct {
 type Result struct {
 	label        string
 	check_result string
-    time_taken time.Duration
+	time_taken   time.Duration
 }
 
 var sites []Site     // i think this is declaring a slice, not an array
@@ -27,7 +27,11 @@ var results []Result // same as above
 
 func main() {
 	initialize_sites() // initialize array (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
-	check_sites(sites) // do the work
+
+	/* do the work */
+	// check_sites(sites)
+	check_sites_just_with_routines(sites)
+
 	/* print stuff */
 	// fmt.Println("plain sites -- ", sites)
 	// fmt.Println("---")
@@ -86,6 +90,46 @@ func initialize_sites() []Site {
 	return sites
 }
 
+func check_sites_just_with_routines(sites []Site) {
+	for _, site_element := range sites {
+		go check_site(site_element)
+	}
+	// time.Sleep(100 * time.Millisecond)
+	var input string
+	fmt.Scanln(&input)
+	fmt.Println("done")
+}
+
+func check_site(site Site) {
+	start := time.Now()
+	// fmt.Println("\nsite -- ", site.label)
+	resp, _ := http.Get(site.url)
+	// fmt.Println("status code -- ", resp.StatusCode)
+	body_bytes, _ := ioutil.ReadAll(resp.Body)
+	text := string(body_bytes)
+	var site_check_result string = "not_found"
+	if strings.Contains(text, site.expected) {
+		site_check_result = "found"
+	}
+	// fmt.Println("site_check_result, ", site_check_result)
+
+	elapsed := time.Since(start)
+	// fmt.Println("elapsed, ", elapsed)
+
+	// fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
+	// elapsed_k := reflect.ValueOf(elapsed)
+	// fmt.Println("elapsed has Kind: ", elapsed_k.Kind())
+
+	result_instance := Result{
+		label:        site.label,
+		check_result: site_check_result,
+		time_taken:   elapsed,
+	}
+	fmt.Println("result_instance, ", result_instance)
+	results = append(results, result_instance)
+
+}
+
 func check_sites(sites []Site) {
 	total_start := time.Now()
 	for _, site_element := range sites {
@@ -102,16 +146,16 @@ func check_sites(sites []Site) {
 		fmt.Println("site_check_result, ", site_check_result)
 
 		elapsed := time.Since(start)
-        fmt.Println("elapsed, ", elapsed)
+		fmt.Println("elapsed, ", elapsed)
 
-        fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
-        elapsed_k := reflect.ValueOf(elapsed)
-        fmt.Println("elapsed has Kind: ", elapsed_k.Kind())
+		fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
+		elapsed_k := reflect.ValueOf(elapsed)
+		fmt.Println("elapsed has Kind: ", elapsed_k.Kind())
 
 		result_instance := Result{
 			label:        site_element.label,
 			check_result: site_check_result,
-            time_taken: elapsed,
+			time_taken:   elapsed,
 		}
 		fmt.Println("result_instance.check_result, ", result_instance.check_result)
 		results = append(results, result_instance)
