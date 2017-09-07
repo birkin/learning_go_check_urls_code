@@ -5,6 +5,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"io/ioutil"
 	"net/http"
+    "reflect"
 	"strings"
 	"time"
 )
@@ -18,6 +19,7 @@ type Site struct {
 type Result struct {
 	label        string
 	check_result string
+    time_taken time.Duration
 }
 
 var sites []Site     // i think this is declaring a slice, not an array
@@ -98,12 +100,18 @@ func check_sites(sites []Site) {
 			site_check_result = "found"
 		}
 		fmt.Println("site_check_result, ", site_check_result)
+
 		elapsed := time.Since(start)
-		fmt.Println("elapsed, ", elapsed)
+        fmt.Println("elapsed, ", elapsed)
+
+        fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
+        elapsed_k := reflect.ValueOf(elapsed)
+        fmt.Println("elapsed has Kind: ", elapsed_k.Kind())
 
 		result_instance := Result{
 			label:        site_element.label,
 			check_result: site_check_result,
+            time_taken: elapsed,
 		}
 		fmt.Println("result_instance.check_result, ", result_instance.check_result)
 		results = append(results, result_instance)
