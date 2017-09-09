@@ -90,15 +90,15 @@ func initialize_sites() []Site {
 	return sites
 }
 
-func timeTrack(start time.Time, name string) {
-    elapsed := time.Since(start)
-    fmt.Printf("%s took %dms", name, elapsed.Nanoseconds()/1000)
-}
+// func timeTrack(start time.Time, name string) {
+//     elapsed := time.Since(start)
+//     fmt.Printf("%s took %dms", name, elapsed.Nanoseconds()/1000)
+// }
 
 func check_sites_just_with_routines(sites []Site) {
     total_start := time.Now()
 	for _, site_element := range sites {
-        defer timeTrack(time.Now(), "check_sites_just_with_routines")
+        // defer timeTrack(time.Now(), "check_sites_just_with_routines")
 		go check_site(site_element)
 	}
 	// time.Sleep(100 * time.Millisecond)
@@ -113,9 +113,12 @@ func check_sites_just_with_routines(sites []Site) {
 
 func check_site(site Site) {
 	start := time.Now()
-    fmt.Println( "start, ", start )
+    // fmt.Println( "start, ", start )
 	// fmt.Println("\nsite -- ", site.label)
-	resp, _ := http.Get(site.url)
+    // fmt.Println( "start for site %s, ```%v```", site.label, start  )
+    fmt.Printf( "start for site %v, ```%v```\n", site.label, start  )
+
+    resp, _ := http.Get(site.url)
 	// fmt.Println("status code -- ", resp.StatusCode)
 	body_bytes, _ := ioutil.ReadAll(resp.Body)
 	text := string(body_bytes)
@@ -126,8 +129,15 @@ func check_site(site Site) {
 	// fmt.Println("site_check_result, ", site_check_result)
 
 	// elapsed := time.Since(start)
-    var elapsed time.Duration
-    elapsed = time.Since(start)
+    // var elapsed time.Duration
+    // elapsed = time.Since(start)
+
+    end := time.Now()
+    // fmt.Println( "end.String, ", end.String() )
+    fmt.Printf( "end for site %v, ```%v```\n", site.label, end  )
+
+
+    elapsed := end.Sub(start)
 	fmt.Println("elapsed, ", elapsed)
 
 	// fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
