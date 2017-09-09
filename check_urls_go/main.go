@@ -90,18 +90,30 @@ func initialize_sites() []Site {
 	return sites
 }
 
+func timeTrack(start time.Time, name string) {
+    elapsed := time.Since(start)
+    fmt.Printf("%s took %dms", name, elapsed.Nanoseconds()/1000)
+}
+
 func check_sites_just_with_routines(sites []Site) {
+    total_start := time.Now()
 	for _, site_element := range sites {
+        defer timeTrack(time.Now(), "check_sites_just_with_routines")
 		go check_site(site_element)
 	}
 	// time.Sleep(100 * time.Millisecond)
 	var input string
 	fmt.Scanln(&input)
 	fmt.Println("done")
+    total_elapsed := time.Since(total_start)
+    fmt.Println("total_elapsed, ", total_elapsed)
+    fmt.Println("\n results...")
+    spew.Dump(results)
 }
 
 func check_site(site Site) {
 	start := time.Now()
+    fmt.Println( "start, ", start )
 	// fmt.Println("\nsite -- ", site.label)
 	resp, _ := http.Get(site.url)
 	// fmt.Println("status code -- ", resp.StatusCode)
@@ -113,8 +125,10 @@ func check_site(site Site) {
 	}
 	// fmt.Println("site_check_result, ", site_check_result)
 
-	elapsed := time.Since(start)
-	// fmt.Println("elapsed, ", elapsed)
+	// elapsed := time.Since(start)
+    var elapsed time.Duration
+    elapsed = time.Since(start)
+	fmt.Println("elapsed, ", elapsed)
 
 	// fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
 	// elapsed_k := reflect.ValueOf(elapsed)
