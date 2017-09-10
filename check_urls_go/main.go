@@ -2,13 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/kelseyhightower/envconfig"
 )
+
+type Settings struct {
+	LogPath  string `default:"./url_check.log"`
+	AppTitle string `default:"Go Url-Checker"`
+}
 
 type Site struct {
 	label    string
@@ -26,7 +33,21 @@ var sites []Site     // i think this is declaring a slice, not an array
 var results []Result // same as above
 
 func main() {
-	initialize_sites() // initialize array (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
+
+	/* initialize settings */
+	var s Settings
+	err := envconfig.Process("../env_url_check", &s)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	format := "Debug: %v\nPort: %d\nUser: %s\nRate: %f\nTimeout: %s\n"
+	_, err = fmt.Printf(format, s.Debug, s.Port, s.User, s.Rate, s.Timeout)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	/* initialize sites array */
+	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 
 	/* do the work */
 	// check_sites(sites)
@@ -96,29 +117,29 @@ func initialize_sites() []Site {
 // }
 
 func check_sites_just_with_routines(sites []Site) {
-    total_start := time.Now()
+	total_start := time.Now()
 	for _, site_element := range sites {
-        // defer timeTrack(time.Now(), "check_sites_just_with_routines")
+		// defer timeTrack(time.Now(), "check_sites_just_with_routines")
 		go check_site(site_element)
 	}
 	// time.Sleep(100 * time.Millisecond)
 	var input string
 	fmt.Scanln(&input)
 	fmt.Println("done")
-    total_elapsed := time.Since(total_start)
-    fmt.Println("total_elapsed, ", total_elapsed)
-    fmt.Println("\n results...")
-    spew.Dump(results)
+	total_elapsed := time.Since(total_start)
+	fmt.Println("total_elapsed, ", total_elapsed)
+	fmt.Println("\n results...")
+	spew.Dump(results)
 }
 
 func check_site(site Site) {
 	start := time.Now()
-    // fmt.Println( "start, ", start )
+	// fmt.Println( "start, ", start )
 	// fmt.Println("\nsite -- ", site.label)
-    // fmt.Println( "start for site %s, ```%v```", site.label, start  )
-    fmt.Printf( "start for site %v, ```%v```\n", site.label, start  )
+	// fmt.Println( "start for site %s, ```%v```", site.label, start  )
+	fmt.Printf("start for site %v, ```%v```\n", site.label, start)
 
-    resp, _ := http.Get(site.url)
+	resp, _ := http.Get(site.url)
 	// fmt.Println("status code -- ", resp.StatusCode)
 	body_bytes, _ := ioutil.ReadAll(resp.Body)
 	text := string(body_bytes)
@@ -129,15 +150,14 @@ func check_site(site Site) {
 	// fmt.Println("site_check_result, ", site_check_result)
 
 	// elapsed := time.Since(start)
-    // var elapsed time.Duration
-    // elapsed = time.Since(start)
+	// var elapsed time.Duration
+	// elapsed = time.Since(start)
 
-    end := time.Now()
-    // fmt.Println( "end.String, ", end.String() )
-    fmt.Printf( "end for site %v, ```%v```\n", site.label, end  )
+	end := time.Now()
+	// fmt.Println( "end.String, ", end.String() )
+	fmt.Printf("end for site %v, ```%v```\n", site.label, end)
 
-
-    elapsed := end.Sub(start)
+	elapsed := end.Sub(start)
 	fmt.Println("elapsed, ", elapsed)
 
 	// fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
@@ -205,8 +225,8 @@ func check_sites(sites []Site) {
 // defer timeTrack(time.Now(), "lookup-and-check")
 
 // func timeTrack(start time.Time, name string) {
-// 	elapsed := time.Since(start)
-// 	fmt.Printf("%s took %s\n", name, elapsed)
+//  elapsed := time.Since(start)
+//  fmt.Printf("%s took %s\n", name, elapsed)
 // }
 
 // if strings.Contains(str, subStr) {}
