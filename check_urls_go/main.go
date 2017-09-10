@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 
@@ -125,7 +126,19 @@ func check_sites_just_with_routines(sites []Site) {
 	fmt.Println("done")
 	total_elapsed := time.Since(total_start)
 	fmt.Println("total_elapsed, ", total_elapsed)
-	fmt.Println("\n results...")
+
+	// fmt.Println("\n results...")
+	// spew.Dump(results)
+
+	fmt.Println("\n results before sort...")
+	spew.Dump(results)
+
+	sort.Slice(results, func(i, j int) bool { return results[i].label < results[j].label })
+	fmt.Println("\n results after sorting by label...")
+	spew.Dump(results)
+
+	sort.Slice(results, func(i, j int) bool { return results[i].time_taken < results[j].time_taken })
+	fmt.Println("\n results after sorting by time_taken...")
 	spew.Dump(results)
 }
 
@@ -212,10 +225,18 @@ func check_sites(sites []Site) {
 	// fmt.Println("body_bytes -- ", body_bytes)
 	// text := string(body_bytes)
 	// fmt.Println("body -- ", text)
+
 	total_elapsed := time.Since(total_start)
 	fmt.Println("total_elapsed, ", total_elapsed)
-	fmt.Println("\n results...")
-	spew.Dump(results)
+
+	// fmt.Println("\n results before sort...")
+	// spew.Dump(results)
+
+	// sort.Slice(results, func(i, j int) bool { return results[i].time_taken < results[j].time_taken })
+
+	// fmt.Println("\n results after sort...")
+	// spew.Dump(results)
+
 	// above may not handle non-ascii characters: <https://stackoverflow.com/a/38808838> -- update, it appears to handle non-ascii characters fine
 }
 
