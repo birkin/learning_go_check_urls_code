@@ -29,30 +29,16 @@ type Result struct {
 	time_taken   time.Duration
 }
 
+var settings Settings
 var sites []Site     // i think this is declaring a slice, not an array
 var results []Result // same as above
-var settings Settings
 
 func main() {
 
 	/* initialize settings */
-	// settings, _ = load_settings()
-	fmt.Printf( "LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH )
+	fmt.Printf("LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH)
 	load_settings()
-	fmt.Printf( "LOGPATH in main() after settings initialized, ```%v```\n", settings.LOGPATH )
-
-	// var s Specification
-	// err := envconfig.Process("TEST", &s)
-	// if err != nil {
-	// 	fmt.Printf("error, ```%v```", err.Error)
-	// } else {
-	// 	fmt.Printf( "no error\n" )
-	// }
-
-	// message := "LOGPATH: %v\nAPPTITLE: %v\n"
-	// fmt.Printf(message, settings.LOGPATH, settings.APPTITLE)
-
-	return
+	fmt.Printf("LOGPATH in main() after settings initialized, ```%v```\n", settings.LOGPATH)
 
 	/* initialize sites array */
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
@@ -61,44 +47,21 @@ func main() {
 	// check_sites(sites)
 	check_sites_just_with_routines(sites)
 
-	/* print stuff */
-	// fmt.Println("plain sites -- ", sites)
-	// fmt.Println("---")
-	// mt.Printf("sites with labels, -- %+v\n", sites) // adding `%+v` prints the field-names
-	// fmt.Println("---")
-	// fmt.Println("dump...")
-	// spew.Dump(sites)
-	// fmt.Println("---")
-
 } // end func main()
 
 /* ----------------------------------------------------------------------
    helper functions
    ---------------------------------------------------------------------- */
 
-func load_settings() (Settings) {
+func load_settings() Settings {
 	err := envconfig.Process("URL_CHECK", &settings)
 	if err != nil {
 		fmt.Printf("error, ```%v```", err.Error)
-		panic( err ) }
-	fmt.Printf( "LOGPATH in load_settings(), ```%v```\n", settings.LOGPATH )
+		panic(err)
+	}
+	fmt.Printf("LOGPATH in load_settings(), ```%v```\n", settings.LOGPATH)
 	return Settings{}
-	// } else {
-	// 	fmt.Printf("no error\n")
-	// 	return settings, nil
-	// }
 }
-
-// func load_settings() (Settings, error) {
-// 	err := envconfig.Process("URL_CHECK", &settings)
-// 	if err != nil {
-// 		fmt.Printf("error, ```%v```", err.Error)
-// 		return Settings{}, err
-// 	} else {
-// 		fmt.Printf("no error\n")
-// 		return settings, nil
-// 	}
-// }
 
 func initialize_sites() []Site {
 	sites = []Site{}
@@ -140,6 +103,8 @@ func initialize_sites() []Site {
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"foo"},
 	)
+	fmt.Println("\n sites...")
+	spew.Dump(sites)
 	return sites
 }
 
@@ -169,7 +134,7 @@ func check_site(site Site) {
 	// fmt.Println( "start, ", start )
 	// fmt.Println("\nsite -- ", site.label)
 	// fmt.Println( "start for site %s, ```%v```", site.label, start  )
-	fmt.Printf("start for site %v, ```%v```\n", site.label, start)
+	// fmt.Printf("start for site %v, ```%v```\n", site.label, start)
 
 	resp, _ := http.Get(site.url)
 	// fmt.Println("status code -- ", resp.StatusCode)
@@ -181,16 +146,16 @@ func check_site(site Site) {
 	}
 	// fmt.Println("site_check_result, ", site_check_result)
 
-	// elapsed := time.Since(start)
+	elapsed := time.Since(start)
 	// var elapsed time.Duration
 	// elapsed = time.Since(start)
 
-	end := time.Now()
-	// fmt.Println( "end.String, ", end.String() )
-	fmt.Printf("end for site %v, ```%v```\n", site.label, end)
+	// end := time.Now()
+	// // fmt.Println( "end.String, ", end.String() )
+	// fmt.Printf("end for site %v, ```%v```\n", site.label, end)
 
-	elapsed := end.Sub(start)
-	fmt.Println("elapsed, ", elapsed)
+	// elapsed := end.Sub(start)
+	// fmt.Println("elapsed, ", elapsed)
 
 	// fmt.Println("elapsed has TypeOf: ", reflect.TypeOf(elapsed))
 	// elapsed_k := reflect.ValueOf(elapsed)
