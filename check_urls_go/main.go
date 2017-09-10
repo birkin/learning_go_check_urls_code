@@ -12,9 +12,9 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-type Settings struct {
-	LogPath  string `default:"./url_check.log"`
-	AppTitle string `default:"Go Url-Checker"`
+type Specification struct {
+	LOGPATH  string `envconfig:"LOGPATH" default:"./url_check.log"`
+	APPTITLE string `default:"Go Url-Checker"`
 }
 
 type Site struct {
@@ -35,16 +35,21 @@ var results []Result // same as above
 func main() {
 
 	/* initialize settings */
-	var s Settings
-	err := envconfig.Process("../env_url_check", &s)
+	var s Specification
+	err := envconfig.Process("TEST", &s)
 	if err != nil {
-		log.Fatal(err.Error())
+		fmt.Printf("error, ```%v```", err.Error)
+	} else {
+		fmt.Printf( "no error\n" )
 	}
-	format := "Debug: %v\nPort: %d\nUser: %s\nRate: %f\nTimeout: %s\n"
-	_, err = fmt.Printf(format, s.Debug, s.Port, s.User, s.Rate, s.Timeout)
+
+	message := "LOGPATH: %v\nAPPTITLE: %v\n"
+	_, err = fmt.Printf(message, s.LOGPATH, s.APPTITLE)
 	if err != nil {
-		log.Fatal(err.Error())
+		fmt.Printf("error, ```%v```", err.Error)
 	}
+
+	return
 
 	/* initialize sites array */
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
