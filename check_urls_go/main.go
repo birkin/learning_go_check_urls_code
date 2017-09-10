@@ -12,7 +12,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-type Specification struct {
+type Settings struct {
 	LOGPATH  string `envconfig:"LOGPATH" default:"./url_check.log"`
 	APPTITLE string `default:"Go Url-Checker"`
 }
@@ -31,23 +31,26 @@ type Result struct {
 
 var sites []Site     // i think this is declaring a slice, not an array
 var results []Result // same as above
+var settings Settings
 
 func main() {
 
 	/* initialize settings */
-	var s Specification
-	err := envconfig.Process("TEST", &s)
-	if err != nil {
-		fmt.Printf("error, ```%v```", err.Error)
-	} else {
-		fmt.Printf( "no error\n" )
-	}
+	// settings, _ = load_settings()
+	fmt.Printf( "LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH )
+	load_settings()
+	fmt.Printf( "LOGPATH in main() after settings initialized, ```%v```\n", settings.LOGPATH )
 
-	message := "LOGPATH: %v\nAPPTITLE: %v\n"
-	_, err = fmt.Printf(message, s.LOGPATH, s.APPTITLE)
-	if err != nil {
-		fmt.Printf("error, ```%v```", err.Error)
-	}
+	// var s Specification
+	// err := envconfig.Process("TEST", &s)
+	// if err != nil {
+	// 	fmt.Printf("error, ```%v```", err.Error)
+	// } else {
+	// 	fmt.Printf( "no error\n" )
+	// }
+
+	// message := "LOGPATH: %v\nAPPTITLE: %v\n"
+	// fmt.Printf(message, settings.LOGPATH, settings.APPTITLE)
 
 	return
 
@@ -72,6 +75,30 @@ func main() {
 /* ----------------------------------------------------------------------
    helper functions
    ---------------------------------------------------------------------- */
+
+func load_settings() (Settings) {
+	err := envconfig.Process("URL_CHECK", &settings)
+	if err != nil {
+		fmt.Printf("error, ```%v```", err.Error)
+		panic( err ) }
+	fmt.Printf( "LOGPATH in load_settings(), ```%v```\n", settings.LOGPATH )
+	return Settings{}
+	// } else {
+	// 	fmt.Printf("no error\n")
+	// 	return settings, nil
+	// }
+}
+
+// func load_settings() (Settings, error) {
+// 	err := envconfig.Process("URL_CHECK", &settings)
+// 	if err != nil {
+// 		fmt.Printf("error, ```%v```", err.Error)
+// 		return Settings{}, err
+// 	} else {
+// 		fmt.Printf("no error\n")
+// 		return settings, nil
+// 	}
+// }
 
 func initialize_sites() []Site {
 	sites = []Site{}
