@@ -12,8 +12,8 @@ import (
 )
 
 type Settings struct {
-	LOGPATH  string `envconfig:"LOGPATH" default:"./url_check.log"`
-	APPTITLE string `default:"Go Url-Checker"`
+	LOGPATH  string `envconfig:"LOGPATH" default:"oops-default-logpath"`
+	APPTITLE string `default:"oops-default-apptitle"`
 }
 
 type Site struct {
@@ -54,7 +54,7 @@ func main() {
 
 func load_settings() Settings {
 	/* Loads settings, eventually for logging and database. */
-	err := envconfig.Process("URL_CHECK", &settings)
+	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
 		fmt.Printf("error, ```%v```", err.Error)
 		panic(err)
