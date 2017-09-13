@@ -130,12 +130,14 @@ func check_sites_just_with_routines3(sites []Site) {
 
 	// time.Sleep(2 * time.Second)
 
+	var counter int
 	var v string
 	for v = range writer_channel {
-		time.Sleep(100 * time.Millisecond)
+		counter ++
+		time.Sleep(50 * time.Millisecond)
 		fmt.Println("channel-value, ", v)
-		if v == "repo_search" {
-			fmt.Println( "match found, about to close" )
+		if counter == len(sites) {
+			fmt.Println( "about to close" )
 			close(writer_channel)
 		}
 	}
