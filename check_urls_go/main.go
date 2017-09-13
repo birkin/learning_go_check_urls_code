@@ -36,7 +36,6 @@ var results []Result // same as above
 
 func main() {
 
-
 	/* initialize settings */
 	fmt.Printf("LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH)
 	load_settings()
@@ -48,7 +47,8 @@ func main() {
 	/* do the work */
 	// check_sites(sites)
 	// check_sites_just_with_routines(sites)
-	check_sites_just_with_routines2(sites)
+	// check_sites_just_with_routines2(sites)
+	check_sites_just_with_routines3(sites)
 
 } // end func main()
 
@@ -115,6 +115,60 @@ func initialize_sites() []Site {
    current experimentation
    ---------------------------------------------------------------------- */
 
+func check_sites_just_with_routines3(sites []Site) {
+	writer_channel := make(chan string)
+
+	for _, site_element := range sites {
+		// fmt.Println( "i, ", i )
+		go check_site2(site_element, writer_channel)
+		// if i >= 11 {
+		// 	close(writer_channel)
+		// }
+
+	}
+	// close(writer_channel)
+
+	time.Sleep(2 * time.Second)
+
+	var v string
+	for v = range writer_channel {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println("channel-value, ", v)
+	}
+
+	// x := <-writer_channel
+	// fmt.Println("value-x, ", x)
+
+	// y := <-writer_channel
+	// fmt.Println("value-y, ", y)
+
+	// time.Sleep(100 * time.Millisecond)
+}
+
+func check_site3(site Site, writer_channel chan string) {
+	start := time.Now()
+
+	resp, _ := http.Get(site.url)
+	body_bytes, _ := ioutil.ReadAll(resp.Body)
+	text := string(body_bytes)
+	var site_check_result string = "not_found"
+	if strings.Contains(text, site.expected) {
+		site_check_result = "found"
+	}
+
+	elapsed := time.Since(start)
+
+	result_instance := Result{
+		label:        site.label,
+		check_result: site_check_result,
+		time_taken:   elapsed,
+	}
+	fmt.Println("result_instance.label, ", result_instance.label)
+	writer_channel <- result_instance.label
+}
+
+/* ---------------------------------------------------------------------- */
+
 func check_sites_just_with_routines2(sites []Site) {
 	writer_channel := make(chan string)
 
@@ -123,8 +177,7 @@ func check_sites_just_with_routines2(sites []Site) {
 		go check_site2(site_element, writer_channel)
 	}
 
-
-	time.Sleep(5 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	x := <-writer_channel
 	fmt.Println("value-x, ", x)
@@ -132,7 +185,7 @@ func check_sites_just_with_routines2(sites []Site) {
 	y := <-writer_channel
 	fmt.Println("value-y, ", y)
 
-	close(writer_channel)
+	// close(writer_channel)
 
 	// time.Sleep(100 * time.Millisecond)
 }
@@ -158,8 +211,6 @@ func check_site2(site Site, writer_channel chan string) {
 	fmt.Println("result_instance.label, ", result_instance.label)
 	writer_channel <- result_instance.label
 }
-
-/* ---------------------------------------------------------------------- */
 
 // func timeTrack(start time.Time, name string) {
 //     elapsed := time.Since(start)
