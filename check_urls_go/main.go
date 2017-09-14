@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
-	"github.com/kelseyhightower/envconfig"
+	"github.com/davecgh/go-spew/spew"      // easy way to pretty-print structs
+	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
 )
 
 type Settings struct {
@@ -44,7 +44,7 @@ func main() {
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 
 	/// call worker function
-	check_sites_just_with_routines(sites)
+	check_sites_with_goroutines(sites)
 
 } // end func main()
 
@@ -109,7 +109,7 @@ func initialize_sites() []Site {
 	return sites
 }
 
-func check_sites_just_with_routines(sites []Site) {
+func check_sites_with_goroutines(sites []Site) {
 	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
 
 	/// initialize channel
