@@ -7,7 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"      // easy way to pretty-print structs
+	"github.com/davecgh/go-spew/spew" // easy way to pretty-print structs
+	"github.com/goinggo/tracelog"
 	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
 )
 
@@ -35,6 +36,11 @@ var sites []Site // i think this declares a slice, not an array
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
 
+	tracelog.Start(tracelog.LevelTrace)
+	tracelog.Trace("aa", "bb", "Hello Trace")
+	tracelog.Info("cc", "dd", "Hello Info")
+
+
 	/// initialize settings
 	fmt.Printf("LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH)
 	load_settings()
@@ -54,6 +60,11 @@ func main() {
 
 func load_settings() Settings {
 	/* Loads settings, eventually for logging and database. */
+
+	tracelog.Start(tracelog.LevelTrace)
+	tracelog.Trace("main", "main", "Hello Trace")
+	tracelog.Info("aa", "bb", "Hello cc")
+
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
 		fmt.Printf("error, ```%v```", err.Error)
