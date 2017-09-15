@@ -36,15 +36,13 @@ var sites []Site // i think this declares a slice, not an array
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
 
-	tracelog.Start(tracelog.LevelTrace)
-	tracelog.Trace("aa", "bb", "Hello Trace")
-	tracelog.Info("cc", "dd", "Hello Info")
-
-
 	/// initialize settings
 	fmt.Printf("LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH)
 	load_settings()
 	fmt.Printf("LOGPATH in main() after settings initialized, ```%v```\n", settings.LOGPATH)
+
+	/// initialize logging
+	tracelog.StartFile(tracelog.LevelTrace, "/Users/birkin/Desktop/check_urls.log", 2)
 
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
@@ -60,11 +58,6 @@ func main() {
 
 func load_settings() Settings {
 	/* Loads settings, eventually for logging and database. */
-
-	tracelog.Start(tracelog.LevelTrace)
-	tracelog.Trace("main", "main", "Hello Trace")
-	tracelog.Info("aa", "bb", "Hello cc")
-
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
 		fmt.Printf("error, ```%v```", err.Error)
@@ -117,6 +110,7 @@ func initialize_sites() []Site {
 	)
 	fmt.Println("\n sites, spewed...")
 	spew.Dump(sites)
+	tracelog.Trace("some-title", "initialize_sites()", "returning sites")
 	return sites
 }
 
