@@ -1,15 +1,17 @@
 package main
 
 import (
+	// "bytes"
 	"fmt"
 	"io/ioutil"
+	// "log"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew" // easy way to pretty-print structs
-	"github.com/goinggo/tracelog"
+	"github.com/davecgh/go-spew/spew"      // easy way to pretty-print structs
 	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
+	"github.com/romana/rlog"
 )
 
 type Settings struct {
@@ -36,13 +38,34 @@ var sites []Site // i think this declares a slice, not an array
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
 
+	rlog.Info("starting main()")
+
 	/// initialize settings
 	fmt.Printf("LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH)
 	load_settings()
 	fmt.Printf("LOGPATH in main() after settings initialized, ```%v```\n", settings.LOGPATH)
 
 	/// initialize logging
-	tracelog.StartFile(tracelog.LevelTrace, "/Users/birkin/Desktop/check_urls.log", 2)
+	// var (
+	// 	buf    bytes.Buffer
+	// 	logger = log.New(&buf, "logger: ", log.Lshortfile)
+	// )
+	// logger.Print("Hello, log file!")
+	// fmt.Print(&buf)
+
+	// var (
+	// 	buf    bytes.Buffer
+	// 	logger = log.New(&buf, "INFO: ", log.Lshortfile)
+
+	// 	infof = func(info string) {
+	// 		logger.Output(2, info)
+	// 	}
+	// )
+	// infof("Hello world")
+	// fmt.Print(&buf)
+
+
+
 
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
@@ -58,12 +81,14 @@ func main() {
 
 func load_settings() Settings {
 	/* Loads settings, eventually for logging and database. */
+	rlog.Info("starting load_settings()")
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
 		fmt.Printf("error, ```%v```", err.Error)
 		panic(err)
 	}
 	fmt.Printf("LOGPATH in load_settings(), ```%v```\n", settings.LOGPATH)
+	rlog.Info( "LOGPATH in load_settings()", settings.LOGPATH )
 	return Settings{}
 }
 
@@ -72,45 +97,44 @@ func initialize_sites() []Site {
 	sites = []Site{}
 	sites = append(
 		sites,
-		Site{
-			label:    "repo_file",
-			url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
-			expected: "BleedBox", // note: since brace is on following line, this comma is required
-		},
-		Site{"repo_search",
-			"https://repository.library.brown.edu/studio/search/?q=elliptic",
-			"The sequence of division polynomials"},
-		Site{"bipg_wiki",
-			"https://wiki.brown.edu/confluence/display/bipg/Brown+Internet+Programming+Group+Home",
-			"The BIPG idea"},
-		Site{"booklocator_app",
-			"http://library.brown.edu/services/book_locator/?callnumber=GC97+.C46&location=sci&title=Chemistry+and+biochemistry+of+estuaries&status=AVAILABLE&oclc_number=05831908&public=true",
-			"GC97 .C46 Level 11, Aisle 2A"},
-		Site{"callnumber_app",
-			"https://apps.library.brown.edu/callnumber/v2/?callnumber=PS3576",
-			"American Literature"},
+		// Site{
+		// 	label:    "repo_file",
+		// 	url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
+		// 	expected: "BleedBox", // note: since brace is on following line, this comma is required
+		// },
+		// Site{"repo_search",
+		// 	"https://repository.library.brown.edu/studio/search/?q=elliptic",
+		// 	"The sequence of division polynomials"},
+		// Site{"bipg_wiki",
+		// 	"https://wiki.brown.edu/confluence/display/bipg/Brown+Internet+Programming+Group+Home",
+		// 	"The BIPG idea"},
+		// Site{"booklocator_app",
+		// 	"http://library.brown.edu/services/book_locator/?callnumber=GC97+.C46&location=sci&title=Chemistry+and+biochemistry+of+estuaries&status=AVAILABLE&oclc_number=05831908&public=true",
+		// 	"GC97 .C46 Level 11, Aisle 2A"},
+		// Site{"callnumber_app",
+		// 	"https://apps.library.brown.edu/callnumber/v2/?callnumber=PS3576",
+		// 	"American Literature"},
 		Site{"clusters api",
 			"https://library.brown.edu/clusters_api/data/",
 			"scili-friedman"},
-		Site{"easyborrow_feed",
-			"http://library.brown.edu/easyborrow/feeds/latest_items/",
-			"easyBorrow -- recent requests"},
+		// Site{"easyborrow_feed",
+		// 	"http://library.brown.edu/easyborrow/feeds/latest_items/",
+		// 	"easyBorrow -- recent requests"},
 		Site{"freecite",
 			"http://freecite.library.brown.edu/welcome/",
 			"About FreeCite"},
-		Site{"iip_inscriptions",
-			"http://library.brown.edu/cds/projects/iip/viewinscr/abur0001/",
-			"Khirbet Abu Rish"},
-		Site{"iip_processor",
-			"https://apps.library.brown.edu/iip_processor/info/",
-			"hi"},
+		// Site{"iip_inscriptions",
+		// 	"http://library.brown.edu/cds/projects/iip/viewinscr/abur0001/",
+		// 	"Khirbet Abu Rish"},
+		// Site{"iip_processor",
+		// 	"https://apps.library.brown.edu/iip_processor/info/",
+		// 	"hi"},
 		Site{"not_found_test",
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"foo"},
 	)
 	fmt.Println("\n sites, spewed...")
 	spew.Dump(sites)
-	tracelog.Trace("some-title", "initialize_sites()", "returning sites")
 	return sites
 }
 
