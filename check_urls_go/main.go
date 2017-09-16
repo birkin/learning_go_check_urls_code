@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"      // easy way to pretty-print structs
+	// "github.com/davecgh/go-spew/spew"      // easy way to pretty-print structs
 	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
 	"github.com/romana/rlog"
 )
@@ -43,25 +43,6 @@ func main() {
 	rlog.Info(fmt.Sprintf("LOGPATH in main() before settings initialized, ```%v```", settings.LOGPATH))
 	load_settings()
 	rlog.Info(fmt.Sprintf("LOGPATH in main() after settings initialized, ```%v```", settings.LOGPATH))
-
-	/// initialize logging
-	// var (
-	// 	buf    bytes.Buffer
-	// 	logger = log.New(&buf, "logger: ", log.Lshortfile)
-	// )
-	// logger.Print("Hello, log file!")
-	// fmt.Print(&buf)
-
-	// var (
-	// 	buf    bytes.Buffer
-	// 	logger = log.New(&buf, "INFO: ", log.Lshortfile)
-
-	// 	infof = func(info string) {
-	// 		logger.Output(2, info)
-	// 	}
-	// )
-	// infof("Hello world")
-	// fmt.Print(&buf)
 
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
@@ -127,8 +108,8 @@ func initialize_sites() []Site {
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"foo"},
 	)
-	fmt.Println("\n sites, spewed...")
-	spew.Dump(sites)
+	rlog.Info(fmt.Sprintf("sites, ```%#v```", sites))  // prints, eg, `{label:"clusters api", url:"etc...`
+
 	return sites
 }
 
@@ -160,9 +141,8 @@ func check_sites_with_goroutines(sites []Site) {
 func check_site(site Site, writer_channel chan string) {
 	/* Checks site, stores data to result, & writes info to channel. */
 
-	start := time.Now()
-
 	/// check site
+	start := time.Now()
 	resp, _ := http.Get(site.url)
 	body_bytes, _ := ioutil.ReadAll(resp.Body)
 	text := string(body_bytes)
@@ -171,9 +151,8 @@ func check_site(site Site, writer_channel chan string) {
 		site_check_result = "found"
 	}
 
-	elapsed := time.Since(start)
-
 	/// store result
+	elapsed := time.Since(start)
 	result_instance := Result{
 		label:        site.label,
 		check_result: site_check_result,
@@ -182,7 +161,7 @@ func check_site(site Site, writer_channel chan string) {
 
 	/// write info to channel
 	writer_channel <- result_instance.label
-	rlog.Info(fmt.Sprintf("result_instance.label after write, ```%v```", result_instance.label))
+	rlog.Info(fmt.Sprintf("result_instance.label after write to channel, ```%v```", result_instance.label))
 
 }
 
