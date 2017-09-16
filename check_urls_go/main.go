@@ -37,13 +37,12 @@ var sites []Site // i think this declares a slice, not an array
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
-
 	rlog.Info("starting main()")
 
 	/// initialize settings
-	fmt.Printf("LOGPATH in main() before settings initialized, ```%v```\n", settings.LOGPATH)
+	rlog.Info(fmt.Sprintf("LOGPATH in main() before settings initialized, ```%v```", settings.LOGPATH))
 	load_settings()
-	fmt.Printf("LOGPATH in main() after settings initialized, ```%v```\n", settings.LOGPATH)
+	rlog.Info(fmt.Sprintf("LOGPATH in main() after settings initialized, ```%v```", settings.LOGPATH))
 
 	/// initialize logging
 	// var (
@@ -64,9 +63,6 @@ func main() {
 	// infof("Hello world")
 	// fmt.Print(&buf)
 
-
-
-
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 
@@ -81,14 +77,12 @@ func main() {
 
 func load_settings() Settings {
 	/* Loads settings, eventually for logging and database. */
-	rlog.Info("starting load_settings()")
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
 		fmt.Printf("error, ```%v```", err.Error)
 		panic(err)
 	}
-	fmt.Printf("LOGPATH in load_settings(), ```%v```\n", settings.LOGPATH)
-	rlog.Info( "LOGPATH in load_settings()", settings.LOGPATH )
+	rlog.Info(fmt.Sprintf("LOGPATH in load_settings(), ```%v```", settings.LOGPATH))
 	return Settings{}
 }
 
@@ -155,9 +149,9 @@ func check_sites_with_goroutines(sites []Site) {
 	for channel_output = range writer_channel {
 		counter++
 		time.Sleep(50 * time.Millisecond)
-		fmt.Println("channel-value, ", channel_output)
+		rlog.Info(fmt.Sprintf("channel-value, ```%v```", channel_output))
 		if counter == len(sites) {
-			fmt.Println("about to close")
+			rlog.Info("about to close channel")
 			close(writer_channel)
 		}
 	}
@@ -187,8 +181,9 @@ func check_site(site Site, writer_channel chan string) {
 	}
 
 	/// write info to channel
-	fmt.Println("result_instance.label, ", result_instance.label)
 	writer_channel <- result_instance.label
+	rlog.Info(fmt.Sprintf("result_instance.label after write, ```%v```", result_instance.label))
+
 }
 
 /// EOF
