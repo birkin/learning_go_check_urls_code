@@ -124,8 +124,7 @@ func check_sites_with_goroutines(sites []Site) {
 	}
 
 	/// output channel data
-	var counter int
-	// var channel_output string
+	var counter int = 0
 	var channel_output Result
 	for channel_output = range writer_channel {
 		counter++
@@ -163,7 +162,6 @@ func check_site(site Site, writer_channel chan Result) {
 
 	/// write info to channel
 	writer_channel <- result_instance
-	// writer_channel <- result_instance.label
 	rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
 }
 
