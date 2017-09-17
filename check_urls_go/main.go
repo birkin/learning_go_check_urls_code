@@ -37,12 +37,11 @@ var sites []Site // i think this declares a slice, not an array
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
-	rlog.Info("starting main()")
+	rlog.Info("\n\nstarting")
 
 	/// initialize settings
-	rlog.Info(fmt.Sprintf("LOGPATH in main() before settings initialized, ```%v```", settings.LOGPATH))
+	rlog.Debug(fmt.Sprintf("LOGPATH in main() before settings initialized, ```%v```", settings.LOGPATH))
 	load_settings()
-	rlog.Info(fmt.Sprintf("LOGPATH in main() after settings initialized, ```%v```", settings.LOGPATH))
 
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
@@ -63,7 +62,7 @@ func load_settings() Settings {
 		fmt.Printf("error, ```%v```", err.Error)
 		panic(err)
 	}
-	rlog.Info(fmt.Sprintf("LOGPATH in load_settings(), ```%v```", settings.LOGPATH))
+	rlog.Debug(fmt.Sprintf("LOGPATH in load_settings(), ```%v```", settings.LOGPATH))
 	return Settings{}
 }
 
@@ -108,7 +107,7 @@ func initialize_sites() []Site {
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"foo"},
 	)
-	rlog.Info(fmt.Sprintf("sites, ```%#v```", sites))  // prints, eg, `{label:"clusters api", url:"etc...`
+	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
 
 	return sites
 }
@@ -134,6 +133,8 @@ func check_sites_with_goroutines(sites []Site) {
 		if counter == len(sites) {
 			rlog.Info("about to close channel")
 			close(writer_channel)
+			rlog.Info("channel closed")
+			break // shouldn't be needed
 		}
 	}
 }
