@@ -37,7 +37,8 @@ sites = {
 
 results = {}
 
-start = datetime.datetime.now()
+main_start = datetime.datetime.now()
+
 for ( location, value_dct ) in sites.items():
     url = sites[location]['url']
     expected = sites[location]['expected']
@@ -49,12 +50,12 @@ for ( location, value_dct ) in sites.items():
     if expected.encode('utf-8') in r.content:
         result = 'found'
     now = datetime.datetime.now()
-    elapsed = now - mini_start
-    print( 'location `%s` took `%s`' % (location, elapsed) )
+    mini_elapsed = now - mini_start
+    print( 'location `%s` took `%s`' % (location, mini_elapsed) )
     results[location] = result
 end = datetime.datetime.now()
 
-time_taken = end - start
+main_elapsed = end - start
 
 print( 'results, ```%s```' % pprint.pformat(results) )
-print( 'time_taken, `%s`' % time_taken )
+print( 'time_taken, `%s`' % main_elapsed )
