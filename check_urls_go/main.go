@@ -116,7 +116,7 @@ func check_sites_with_goroutines(sites []Site) {
 	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
 
 	/// initialize channel
-	writer_channel := make(chan string)
+	writer_channel := make(chan Result)
 
 	/// start go routines
 	for _, site_element := range sites {
@@ -125,7 +125,8 @@ func check_sites_with_goroutines(sites []Site) {
 
 	/// output channel data
 	var counter int
-	var channel_output string
+	// var channel_output string
+	var channel_output Result
 	for channel_output = range writer_channel {
 		counter++
 		time.Sleep(50 * time.Millisecond)
@@ -139,7 +140,7 @@ func check_sites_with_goroutines(sites []Site) {
 	}
 }
 
-func check_site(site Site, writer_channel chan string) {
+func check_site(site Site, writer_channel chan Result) {
 	/* Checks site, stores data to result, & writes info to channel. */
 
 	/// check site
@@ -161,9 +162,9 @@ func check_site(site Site, writer_channel chan string) {
 	}
 
 	/// write info to channel
-	writer_channel <- result_instance.label
-	rlog.Info(fmt.Sprintf("result_instance.label after write to channel, ```%v```", result_instance.label))
-
+	writer_channel <- result_instance
+	// writer_channel <- result_instance.label
+	rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
 }
 
 /// EOF
