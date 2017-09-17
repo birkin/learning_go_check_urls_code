@@ -1,10 +1,9 @@
 package main
 
 import (
-	// "bytes"
 	"fmt"
 	"io/ioutil"
-	// "log"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -107,8 +106,16 @@ func initialize_sites() []Site {
 			"https://apps.library.brown.edu/iip_processor/info/",
 			"foo"},
 	)
-	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
 
+	/// temp -- to just take a subset of the above during testing
+	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
+	site1 := sites[rand.Intn(len(sites))]
+	site2 := sites[rand.Intn(len(sites))]
+	sites = []Site{}
+	sites = append(sites, site1, site2)
+	/// end temp
+
+	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
 	return sites
 }
 
@@ -140,12 +147,13 @@ func check_sites_with_goroutines(sites []Site) {
 		}
 	}
 	main_elapsed := time.Since(main_start)
-	rlog.Info(fmt.Sprintf("main_elapsed, ```%v```", main_elapsed) )
+	rlog.Info(fmt.Sprintf("main_elapsed, ```%v```", main_elapsed))
 
 }
 
 func check_site(site Site, writer_channel chan Result) {
 	/* Checks site, stores data to result, & writes info to channel. */
+	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.label))
 
 	/// check site
 	mini_start := time.Now()
