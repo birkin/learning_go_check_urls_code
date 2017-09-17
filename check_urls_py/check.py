@@ -39,15 +39,18 @@ results = {}
 
 start = datetime.datetime.now()
 for ( location, value_dct ) in sites.items():
-    print( 'location, `%s`' % location )
     url = sites[location]['url']
     expected = sites[location]['expected']
+    mini_start = datetime.datetime.now()
     r = requests.get( url )
     result = 'not_found'
     assert type( r.content ) == bytes, type(r.content)
     # print( 'r.content, ```%s```' % r.content )
     if expected.encode('utf-8') in r.content:
         result = 'found'
+    now = datetime.datetime.now()
+    elapsed = now - mini_start
+    print( 'location `%s` took `%s`' % (location, elapsed) )
     results[location] = result
 end = datetime.datetime.now()
 
