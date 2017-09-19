@@ -1,5 +1,8 @@
 package main
 
+import "database/sql"
+import _ "github.com/go-sql-driver/mysql"
+
 import (
 	"fmt"
 	"io/ioutil"
@@ -14,8 +17,11 @@ import (
 )
 
 type Settings struct {
-	LOGPATH  string `envconfig:"LOGPATH" default:"oops-default-logpath"`
-	APPTITLE string `default:"oops-default-apptitle"`
+	DB_USERNAME string `envconfig:"DB_USERNAME" default:"default_db_username"`
+	DB_PASSWORD string `envconfig:"DB_PASSWORD" default:"default_db_password"`
+	DB_HOST     string `envconfig:"DB_HOST" default:"default_db_host"`
+	DB_PORT     string `envconfig:"DB_PORT" default:"default_db_port"`
+	DB_NAME     string `envconfig:"DB_NAME" default:"default_db_name"`
 }
 
 type Site struct {
@@ -36,14 +42,28 @@ var sites []Site // i think this declares a slice, not an array
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
+
 	rlog.Info("\n\nstarting")
 
 	/// initialize settings
-	rlog.Debug(fmt.Sprintf("LOGPATH in main() before settings initialized, ```%v```", settings.LOGPATH))
+	rlog.Debug(fmt.Sprintf("settings before settings initialized, ```%#v```", settings))
 	load_settings()
 
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
+
+	/// accesses db
+	db, err := sql.Open("mysql", "user:password@/dbname")
+	if err != nil {
+		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+	}
+	defer db.Close()
+
+	// Open doesn't open a connection. Validate DSN data:
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
 
 	/// call worker function
 	check_sites_with_goroutines(sites)
@@ -61,7 +81,7 @@ func load_settings() Settings {
 		fmt.Printf("error, ```%v```", err.Error)
 		panic(err)
 	}
-	rlog.Debug(fmt.Sprintf("LOGPATH in load_settings(), ```%v```", settings.LOGPATH))
+	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
 	return Settings{}
 }
 
@@ -138,7 +158,7 @@ func check_sites_with_goroutines(sites []Site) {
 	for channel_output = range writer_channel {
 		counter++
 		time.Sleep(50 * time.Millisecond)
-		rlog.Info(fmt.Sprintf("channel-value, ```%v```", channel_output))
+		rlog.Info(fmt.Sprintf("channel-value, ```%#v```", channel_output))
 		if counter == len(sites) {
 			rlog.Info("about to close channel")
 			close(writer_channel)
