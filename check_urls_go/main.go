@@ -53,7 +53,11 @@ func main() {
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 
 	/// accesses db
-	db, err := sql.Open("mysql", "user:password@/dbname")
+	var connect_str string = fmt.Sprintf(
+		"%v:%v@tcp(%v:%v)/%v",
+		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
+	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
+	db, err := sql.Open("mysql", connect_str)
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
