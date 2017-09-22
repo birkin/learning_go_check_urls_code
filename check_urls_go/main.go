@@ -52,7 +52,7 @@ func main() {
 	/// initialize sites array
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 
-	/// accesses db
+	/// access db
 	var connect_str string = fmt.Sprintf(
 		"%v:%v@tcp(%v:%v)/%v",
 		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
@@ -62,12 +62,14 @@ func main() {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
 	defer db.Close()
+	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
 
 	// Open doesn't open a connection. Validate DSN data:
 	err = db.Ping()
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
+	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
 
 	/// call worker function
 	check_sites_with_goroutines(sites)
