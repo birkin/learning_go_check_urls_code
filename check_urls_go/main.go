@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -70,6 +71,10 @@ func main() {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
+	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
+	db_k := reflect.ValueOf(db)
+	fmt.Println("db has Kind: ", db_k.Kind())
+
 
 	/// call worker function
 	check_sites_with_goroutines(sites)
