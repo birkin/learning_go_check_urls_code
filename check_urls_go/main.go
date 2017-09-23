@@ -39,6 +39,8 @@ type Result struct {
 
 var settings Settings
 var sites []Site // i think this declares a slice, not an array
+var db *sql.DB
+
 // var results []Result // same as above
 
 func main() {
@@ -54,27 +56,7 @@ func main() {
 	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 
 	/// access db
-	var connect_str string = fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v",
-		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
-	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
-	db, err := sql.Open("mysql", connect_str)
-	if err != nil {
-		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
-	}
-	defer db.Close()
-	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
-
-	// Open doesn't open a connection. Validate DSN data:
-	err = db.Ping()
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
-	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
-	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
-	db_k := reflect.ValueOf(db)
-	fmt.Println("db has Kind: ", db_k.Kind())
-
+	db = setup_db()
 
 	/// call worker function
 	check_sites_with_goroutines(sites)
@@ -148,6 +130,31 @@ func initialize_sites() []Site {
 
 	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
 	return sites
+}
+
+func setup_db() *sql.DB {
+	/* Initializes db object and confirms connection. */
+	var connect_str string = fmt.Sprintf(
+		"%v:%v@tcp(%v:%v)/%v",
+		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
+	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
+	db, err := sql.Open("mysql", connect_str)
+	if err != nil {
+		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+	}
+	defer db.Close()
+	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
+
+	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
+	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
+	db_k := reflect.ValueOf(db)
+	fmt.Println("db has Kind: ", db_k.Kind())
+	return db
 }
 
 func check_sites_with_goroutines(sites []Site) {
