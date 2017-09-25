@@ -52,14 +52,17 @@ func main() {
 	rlog.Debug(fmt.Sprintf("settings before settings initialized, ```%#v```", settings))
 	load_settings()
 
-	/// initialize sites array
-	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
-
 	/// access db
 	db = setup_db()
 
+	/// initialize sites array
+	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
+	// initialize_sites_from_db()
+	// rlog.Debug("sites from db initialized")
+
 	/// call worker function
 	check_sites_with_goroutines(sites)
+	defer db.Close()
 
 } // end func main()
 
@@ -76,6 +79,40 @@ func load_settings() Settings {
 	}
 	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
 	return Settings{}
+}
+
+func setup_db() *sql.DB {
+	/* Initializes db object and confirms connection. */
+	var connect_str string = fmt.Sprintf(
+		"%v:%v@tcp(%v:%v)/%v",
+		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
+	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
+	db, err := sql.Open("mysql", connect_str)
+	if err != nil {
+		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+	}
+	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
+
+	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
+	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
+	db_k := reflect.ValueOf(db)
+	fmt.Println("db has Kind: ", db_k.Kind())
+	return db
+}
+
+func initialize_sites_from_db() []Site {
+	rows, err := db.Query("SELECT * FROM site_check_app_checksite")
+	if err != nil {
+		panic(err)
+	}
+	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", rows))
+	sites = []Site{}
+	return sites
 }
 
 func initialize_sites() []Site {
@@ -132,34 +169,10 @@ func initialize_sites() []Site {
 	return sites
 }
 
-func setup_db() *sql.DB {
-	/* Initializes db object and confirms connection. */
-	var connect_str string = fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v",
-		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
-	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
-	db, err := sql.Open("mysql", connect_str)
-	if err != nil {
-		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
-	}
-	defer db.Close()
-	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
-
-	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
-	err = db.Ping()
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
-	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
-	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
-	db_k := reflect.ValueOf(db)
-	fmt.Println("db has Kind: ", db_k.Kind())
-	return db
-}
-
 func check_sites_with_goroutines(sites []Site) {
 	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
 
+	rlog.Debug(fmt.Sprintf("starting check_sites"))
 	main_start := time.Now()
 
 	/// initialize channel
@@ -167,13 +180,18 @@ func check_sites_with_goroutines(sites []Site) {
 
 	/// start go routines
 	for _, site_element := range sites {
+		rlog.Debug(fmt.Sprintf("here"))
 		go check_site(site_element, writer_channel)
 	}
+
+	rlog.Info(fmt.Sprintf("len(writer_channel), ```%v```", len(writer_channel)))
 
 	/// output channel data
 	var counter int = 0
 	var channel_output Result
 	for channel_output = range writer_channel {
+		rlog.Debug(fmt.Sprintf("counter, ```%v```", counter))
+		rlog.Debug(fmt.Sprintf("len(sites), ```%v```", len(sites)))
 		counter++
 		time.Sleep(50 * time.Millisecond)
 		rlog.Info(fmt.Sprintf("channel-value, ```%#v```", channel_output))
