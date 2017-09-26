@@ -56,13 +56,13 @@ func main() {
 	db = setup_db()
 
 	/// initialize sites array
-	initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
-	// initialize_sites_from_db()
+	// initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
+	initialize_sites_from_db()
 	// rlog.Debug("sites from db initialized")
 
 	/// call worker function
 	check_sites_with_goroutines(sites)
-	defer db.Close()
+	// defer db.Close()
 
 } // end func main()
 
@@ -106,11 +106,26 @@ func setup_db() *sql.DB {
 }
 
 func initialize_sites_from_db() []Site {
-	rows, err := db.Query("SELECT * FROM site_check_app_checksite")
+	rows, err := db.Query("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
 	if err != nil {
 		panic(err)
 	}
+	for rows.Next() {
+		var id int
+		var name string
+		var url string
+		var text_expected string
+		err = rows.Scan(&id, &name, &url, &text_expected)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(id)
+		fmt.Println(name)
+		fmt.Println(url)
+		fmt.Println(text_expected)
+	}
 	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", rows))
+	db.Close()
 	sites = []Site{}
 	return sites
 }
