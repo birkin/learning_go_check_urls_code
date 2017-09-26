@@ -106,6 +106,8 @@ func setup_db() *sql.DB {
 }
 
 func initialize_sites_from_db() []Site {
+	/* loads sites from db data */
+	sites = []Site{}
 	rows, err := db.Query("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
 	if err != nil {
 		panic(err)
@@ -119,14 +121,32 @@ func initialize_sites_from_db() []Site {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(id)
-		fmt.Println(name)
-		fmt.Println(url)
-		fmt.Println(text_expected)
+		// fmt.Println(id)
+		// fmt.Println(name)
+		// fmt.Println(url)
+		// fmt.Println(text_expected)
+		sites = append(
+			sites,
+			Site{name, url, text_expected},
+			// Site{
+			// label: name,
+			// url: url,
+			// expected: text_expected, // note: since brace is on following line, this comma is required
+			// }
+		)
 	}
 	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", rows))
 	db.Close()
+
+	/// temp -- to just take a subset of the above during testing
+	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
+	site1 := sites[rand.Intn(len(sites))]
+	site2 := sites[rand.Intn(len(sites))]
 	sites = []Site{}
+	sites = append(sites, site1, site2)
+	/// end temp
+
+	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
 	return sites
 }
 
