@@ -58,11 +58,11 @@ func main() {
 	/// initialize sites array
 	// initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	initialize_sites_from_db()
-	// rlog.Debug("sites from db initialized")
+	rlog.Debug("sites from db initialized")
+	defer db.Close()
 
 	/// call worker function
 	check_sites_with_goroutines(sites)
-	// defer db.Close()
 
 } // end func main()
 
@@ -121,21 +121,12 @@ func initialize_sites_from_db() []Site {
 		if err != nil {
 			panic(err)
 		}
-		// fmt.Println(id)
-		// fmt.Println(name)
-		// fmt.Println(url)
-		// fmt.Println(text_expected)
 		sites = append(
 			sites,
 			Site{name, url, text_expected},
-			// Site{
-			// label: name,
-			// url: url,
-			// expected: text_expected, // note: since brace is on following line, this comma is required
-			// }
 		)
 	}
-	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", rows))
+	rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
 	db.Close()
 
 	/// temp -- to just take a subset of the above during testing
