@@ -41,7 +41,7 @@ var settings Settings
 var sites []Site // i think this declares a slice, not an array
 var db *sql.DB
 
-// var results []Result // same as above
+// var results []Result
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
@@ -56,7 +56,6 @@ func main() {
 	db = setup_db()
 
 	/// initialize sites array
-	// initialize_sites() // (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	initialize_sites_from_db()
 	rlog.Debug("sites from db initialized")
 	defer db.Close()
@@ -74,8 +73,7 @@ func load_settings() Settings {
 	/* Loads settings, eventually for logging and database. */
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
-		fmt.Printf("error, ```%v```", err.Error)
-		panic(err)
+		raiseErr(err)
 	}
 	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
 	return Settings{}
@@ -89,14 +87,14 @@ func setup_db() *sql.DB {
 	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
 	db, err := sql.Open("mysql", connect_str)
 	if err != nil {
-		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+		raiseErr(err)
 	}
 	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
 
 	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
 	err = db.Ping()
 	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
+		raiseErr(err)
 	}
 	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
 	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
@@ -110,7 +108,7 @@ func initialize_sites_from_db() []Site {
 	sites = []Site{}
 	rows, err := db.Query("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
 	if err != nil {
-		panic(err)
+		raiseErr(err)
 	}
 	for rows.Next() {
 		var id int
@@ -119,7 +117,7 @@ func initialize_sites_from_db() []Site {
 		var text_expected string
 		err = rows.Scan(&id, &name, &url, &text_expected)
 		if err != nil {
-			panic(err)
+			raiseErr(err)
 		}
 		sites = append(
 			sites,
@@ -141,60 +139,7 @@ func initialize_sites_from_db() []Site {
 	return sites
 }
 
-func initialize_sites() []Site {
-	/* Populates sites slice. */
-	sites = []Site{}
-	sites = append(
-		sites,
-		Site{
-			label:    "repo_file",
-			url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
-			expected: "BleedBox", // note: since brace is on following line, this comma is required
-		},
-		Site{"repo_search",
-			"https://repository.library.brown.edu/studio/search/?q=elliptic",
-			"The sequence of division polynomials"},
-		Site{"bipg_wiki",
-			"https://wiki.brown.edu/confluence/display/bipg/Brown+Internet+Programming+Group+Home",
-			"The BIPG idea"},
-		Site{"booklocator_app",
-			"http://library.brown.edu/services/book_locator/?callnumber=GC97+.C46&location=sci&title=Chemistry+and+biochemistry+of+estuaries&status=AVAILABLE&oclc_number=05831908&public=true",
-			"GC97 .C46 Level 11, Aisle 2A"},
-		Site{"callnumber_app",
-			"https://apps.library.brown.edu/callnumber/v2/?callnumber=PS3576",
-			"American Literature"},
-		Site{"clusters api",
-			"https://library.brown.edu/clusters_api/data/",
-			"scili-friedman"},
-		Site{"easyborrow_feed",
-			"http://library.brown.edu/easyborrow/feeds/latest_items/",
-			"easyBorrow -- recent requests"},
-		Site{"freecite",
-			"http://freecite.library.brown.edu/welcome/",
-			"About FreeCite"},
-		Site{"iip_inscriptions",
-			"http://library.brown.edu/cds/projects/iip/viewinscr/abur0001/",
-			"Khirbet Abu Rish"},
-		Site{"iip_processor",
-			"https://apps.library.brown.edu/iip_processor/info/",
-			"hi"},
-		Site{"not_found_test",
-			"https://apps.library.brown.edu/iip_processor/info/",
-			"foo"},
-	)
-
-	/// temp -- to just take a subset of the above during testing
-	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
-	site1 := sites[rand.Intn(len(sites))]
-	site2 := sites[rand.Intn(len(sites))]
-	sites = []Site{}
-	sites = append(sites, site1, site2)
-	/// end temp
-
-	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
-	return sites
-}
-
+//
 func check_sites_with_goroutines(sites []Site) {
 	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
 
@@ -259,5 +204,68 @@ func check_site(site Site, writer_channel chan Result) {
 	writer_channel <- result_instance
 	rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
 }
+
+func raiseErr(err error) {
+	/* logs and raises error */
+	if err != nil {
+		rlog.Error(fmt.Sprintf("err, ```%v```", err))
+		panic(err)
+	}
+}
+
+// func initialize_sites() []Site {
+// 	/* Populates sites slice.
+// 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go) */
+// 	sites = []Site{}
+// 	sites = append(
+// 		sites,
+// 		Site{
+// 			label:    "repo_file",
+// 			url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
+// 			expected: "BleedBox", // note: since brace is on following line, this comma is required
+// 		},
+// 		Site{"repo_search",
+// 			"https://repository.library.brown.edu/studio/search/?q=elliptic",
+// 			"The sequence of division polynomials"},
+// 		Site{"bipg_wiki",
+// 			"https://wiki.brown.edu/confluence/display/bipg/Brown+Internet+Programming+Group+Home",
+// 			"The BIPG idea"},
+// 		Site{"booklocator_app",
+// 			"http://library.brown.edu/services/book_locator/?callnumber=GC97+.C46&location=sci&title=Chemistry+and+biochemistry+of+estuaries&status=AVAILABLE&oclc_number=05831908&public=true",
+// 			"GC97 .C46 Level 11, Aisle 2A"},
+// 		Site{"callnumber_app",
+// 			"https://apps.library.brown.edu/callnumber/v2/?callnumber=PS3576",
+// 			"American Literature"},
+// 		Site{"clusters api",
+// 			"https://library.brown.edu/clusters_api/data/",
+// 			"scili-friedman"},
+// 		Site{"easyborrow_feed",
+// 			"http://library.brown.edu/easyborrow/feeds/latest_items/",
+// 			"easyBorrow -- recent requests"},
+// 		Site{"freecite",
+// 			"http://freecite.library.brown.edu/welcome/",
+// 			"About FreeCite"},
+// 		Site{"iip_inscriptions",
+// 			"http://library.brown.edu/cds/projects/iip/viewinscr/abur0001/",
+// 			"Khirbet Abu Rish"},
+// 		Site{"iip_processor",
+// 			"https://apps.library.brown.edu/iip_processor/info/",
+// 			"hi"},
+// 		Site{"not_found_test",
+// 			"https://apps.library.brown.edu/iip_processor/info/",
+// 			"foo"},
+// 	)
+
+// 	/// temp -- to just take a subset of the above during testing
+// 	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
+// 	site1 := sites[rand.Intn(len(sites))]
+// 	site2 := sites[rand.Intn(len(sites))]
+// 	sites = []Site{}
+// 	sites = append(sites, site1, site2)
+// 	/// end temp
+
+// 	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
+// 	return sites
+// }
 
 /// EOF
