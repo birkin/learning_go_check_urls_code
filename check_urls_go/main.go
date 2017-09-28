@@ -104,7 +104,8 @@ func setup_db() *sql.DB {
 }
 
 func initialize_sites_from_db() []Site {
-	/* loads sites from db data */
+	/* loads sites from db data
+	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go) */
 	sites = []Site{}
 	rows, err := db.Query("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
 	if err != nil {
