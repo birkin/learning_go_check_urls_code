@@ -55,6 +55,11 @@ func main() {
 	/// access db
 	db = setup_db()
 
+	/// prepare current-time
+	// t := time.Now()
+	// fmt.Println(t.Format("20060102150405"))
+	// rlog.Debug( )
+
 	/// initialize sites array
 	initialize_sites_from_db()
 	rlog.Debug("sites from db initialized")
@@ -82,7 +87,7 @@ func load_settings() Settings {
 func setup_db() *sql.DB {
 	/* Initializes db object and confirms connection. */
 	var connect_str string = fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v",
+		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
 		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
 	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
 	db, err := sql.Open("mysql", connect_str)
