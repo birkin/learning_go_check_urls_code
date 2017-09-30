@@ -154,6 +154,18 @@ func initialize_sites_from_db() []Site {
 func check_sites_with_goroutines(sites []Site) {
 	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
 
+	/*
+	TODO flow...
+	- initialize db-writer channel, which will get a Site, not a Result
+	- for each site:
+		- start `check_site()` go-routine
+	- have the channel write the results of each updated site to the db
+	- for each updated site, start `check_email_need()` go-routine, which will:
+		- get email_flag
+		- if email_flag is `send_failure_email` or `send_success_email`:
+			- send email
+	*/
+
 	rlog.Debug(fmt.Sprintf("starting check_sites"))
 	main_start := time.Now()
 
