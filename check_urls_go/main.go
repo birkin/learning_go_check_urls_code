@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"reflect"
+	// "reflect"
 	"strings"
 	"time"
 
@@ -91,22 +91,22 @@ func setup_db() *sql.DB {
 	var connect_str string = fmt.Sprintf(
 		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
 		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
-	rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
+	// rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
 	db, err := sql.Open("mysql", connect_str)
 	if err != nil {
 		raiseErr(err)
 	}
-	rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
+	// rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
 
 	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
 	err = db.Ping()
 	if err != nil {
 		raiseErr(err)
 	}
-	rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
-	fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
-	db_k := reflect.ValueOf(db)
-	fmt.Println("db has Kind: ", db_k.Kind())
+	// rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
+	// fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
+	// db_k := reflect.ValueOf(db)
+	// fmt.Println("db has Kind: ", db_k.Kind())
 	return db
 }
 
@@ -135,7 +135,7 @@ func initialize_sites_from_db() []Site {
 			Site{name, url, text_expected},
 		)
 	}
-	rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
+	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
 	db.Close()
 
 	/// temp -- to just take a subset of the above during testing
@@ -162,23 +162,23 @@ func check_sites_with_goroutines(sites []Site) {
 
 	/// start go routines
 	for _, site_element := range sites {
-		rlog.Debug(fmt.Sprintf("here"))
+		// rlog.Debug(fmt.Sprintf("here"))
 		go check_site(site_element, writer_channel)
 	}
 
-	rlog.Info(fmt.Sprintf("len(writer_channel), ```%v```", len(writer_channel)))
+	// rlog.Info(fmt.Sprintf("len(writer_channel), ```%v```", len(writer_channel)))
 
 	/// output channel data
 	var counter int = 0
 	var channel_output Result
 	for channel_output = range writer_channel {
-		rlog.Debug(fmt.Sprintf("counter, ```%v```", counter))
-		rlog.Debug(fmt.Sprintf("len(sites), ```%v```", len(sites)))
+		// rlog.Debug(fmt.Sprintf("counter, ```%v```", counter))
+		// rlog.Debug(fmt.Sprintf("len(sites), ```%v```", len(sites)))
 		counter++
 		time.Sleep(50 * time.Millisecond)
 		rlog.Info(fmt.Sprintf("channel-value, ```%#v```", channel_output))
 		if counter == len(sites) {
-			rlog.Info("about to close channel")
+			// rlog.Info("about to close channel")
 			close(writer_channel)
 			rlog.Info("channel closed")
 			break // shouldn't be needed
