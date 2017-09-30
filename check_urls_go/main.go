@@ -107,7 +107,7 @@ func setup_db() *sql.DB {
 }
 
 func initialize_sites_from_db() []Site {
-	/* loads sites from db data
+	/* Loads sites from db data
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	   Called by main() */
 	sites = []Site{}
