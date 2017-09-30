@@ -29,7 +29,7 @@ type Site struct {
 	id                    int
 	name                  string
 	url                   string
-	expected              string
+	text_expected         string
 	recent_checked_result string
 	time_taken            time.Duration
 }
@@ -130,7 +130,7 @@ func initialize_sites_from_db() []Site {
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, "foo_expected_result", 0}, // name, url-to-check, expected, expected-result, time-duration
+			Site{id, name, url, text_expected, "foo_expected_result", 0}, // name, url-to-check, text_expected, expected-result, time-duration
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
@@ -214,7 +214,7 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	body_bytes, _ := ioutil.ReadAll(resp.Body)
 	text := string(body_bytes)
 	var site_check_result string = "text_not_found"
-	if strings.Contains(text, site.expected) {
+	if strings.Contains(text, site.text_expected) {
 		site_check_result = "passed"
 	}
 
@@ -246,7 +246,7 @@ func raiseErr(err error) {
 // 		Site{
 // 			name:    "repo_file",
 // 			url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
-// 			expected: "BleedBox", // note: since brace is on following line, this comma is required
+// 			text_expected: "BleedBox", // note: since brace is on following line, this comma is required
 // 		},
 // 		Site{"repo_search",
 // 			"https://repository.library.brown.edu/studio/search/?q=elliptic",
