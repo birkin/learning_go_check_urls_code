@@ -155,35 +155,35 @@ func check_sites_with_goroutines(sites []Site) {
 	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
 
 	/*
-	TODO flow...
-	- initialize db-writer channel, which will get a Site, not a Result
-	- for each site:
-		- start `check_site()` go-routine
-	- have the channel write the results of each updated site to the db
-	- for each updated site, start `check_email_need()` go-routine, which will:
-		- get email_flag
-		- if email_flag is `send_failure_email` or `send_success_email`:
-			- send email
+		TODO flow...
+		- initialize db-writer channel, which will get a Site, not a Result
+		- for each site:
+			- start `check_site()` go-routine
+		- have the channel write the results of each updated site to the db
+		- for each updated site, start `check_email_need()` go-routine, which will:
+			- get email_flag
+			- if email_flag is `send_failure_email` or `send_success_email`:
+				- send email
 	*/
 
 	rlog.Debug(fmt.Sprintf("starting check_sites"))
 	main_start := time.Now()
 
 	/// initialize channel
-	writer_channel := make(chan Result)
+	dbwriter_channel := make(chan Result)
 
 	/// start go routines
 	for _, site_element := range sites {
 		// rlog.Debug(fmt.Sprintf("here"))
-		go check_site(site_element, writer_channel)
+		go check_site(site_element, dbwriter_channel)
 	}
 
-	// rlog.Info(fmt.Sprintf("len(writer_channel), ```%v```", len(writer_channel)))
+	// rlog.Info(fmt.Sprintf("len(dbwriter_channel), ```%v```", len(dbwriter_channel)))
 
 	/// output channel data
 	var counter int = 0
 	var channel_output Result
-	for channel_output = range writer_channel {
+	for channel_output = range dbwriter_channel {
 		// rlog.Debug(fmt.Sprintf("counter, ```%v```", counter))
 		// rlog.Debug(fmt.Sprintf("len(sites), ```%v```", len(sites)))
 		counter++
@@ -191,7 +191,7 @@ func check_sites_with_goroutines(sites []Site) {
 		rlog.Info(fmt.Sprintf("channel-value, ```%#v```", channel_output))
 		if counter == len(sites) {
 			// rlog.Info("about to close channel")
-			close(writer_channel)
+			close(dbwriter_channel)
 			rlog.Info("channel closed")
 			break // shouldn't be needed
 		}
@@ -201,7 +201,7 @@ func check_sites_with_goroutines(sites []Site) {
 
 }
 
-func check_site(site Site, writer_channel chan Result) {
+func check_site(site Site, dbwriter_channel chan Result) {
 	/* Checks site, stores data to result, & writes info to channel. */
 	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.label))
 
@@ -224,7 +224,7 @@ func check_site(site Site, writer_channel chan Result) {
 	}
 
 	/// write info to channel
-	writer_channel <- result_instance
+	dbwriter_channel <- result_instance
 	rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
 }
 
