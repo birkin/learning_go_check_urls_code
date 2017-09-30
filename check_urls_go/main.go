@@ -62,7 +62,6 @@ func main() {
 	rlog.Debug(fmt.Sprintf("now_string, ```%v```", now_string))
 	// rlog.Debug(now_string)
 
-
 	/// initialize sites array
 	initialize_sites_from_db()
 	rlog.Debug("sites from db initialized")
@@ -115,10 +114,10 @@ func initialize_sites_from_db() []Site {
 	/* loads sites from db data
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go) */
 	sites = []Site{}
-	// rows, err := db.Query("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
-	querystring := fmt.Sprintf("SELECT * FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
+	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
+	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
-	rows, err := db.Query( querystring )
+	rows, err := db.Query(querystring)
 	if err != nil {
 		raiseErr(err)
 	}
