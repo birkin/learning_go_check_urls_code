@@ -31,6 +31,7 @@ type Site struct {
 	url                   string
 	text_expected         string
 	email_addresses       string
+	email_message         string
 	recent_checked_result string
 	time_taken            time.Duration
 }
@@ -113,8 +114,8 @@ func initialize_sites_from_db() []Site {
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	   Called by main() */
 	sites = []Site{}
-	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses` FROM `site_check_app_checksite`")
-	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
+	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message` FROM `site_check_app_checksite`")
+	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
 	rows, err := db.Query(querystring)
 	if err != nil {
@@ -126,13 +127,14 @@ func initialize_sites_from_db() []Site {
 		var url string
 		var text_expected string
 		var email_addresses string
-		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses)
+		var email_message string
+		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message)
 		if err != nil {
 			raiseErr(err)
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, "insert_check_result_here", 0}, // name, url-to-check, text_expected, expected-result, time-duration
+			Site{id, name, url, text_expected, email_addresses, email_message, "insert_check_result_here", 0}, // name, url-to-check, text_expected, expected-result, time-duration
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
