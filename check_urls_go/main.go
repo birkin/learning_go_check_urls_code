@@ -26,7 +26,8 @@ type Settings struct {
 }
 
 type Site struct {
-	label                 string
+	id                    int
+	name                  string
 	url                   string
 	expected              string
 	recent_checked_result string
@@ -129,7 +130,7 @@ func initialize_sites_from_db() []Site {
 		}
 		sites = append(
 			sites,
-			Site{name, url, text_expected, "foo_expected_result", 0}, // label, url-to-check, expected, expected-result, time-duration
+			Site{id, name, url, text_expected, "foo_expected_result", 0}, // name, url-to-check, expected, expected-result, time-duration
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
@@ -143,7 +144,7 @@ func initialize_sites_from_db() []Site {
 	sites = append(sites, site1, site2)
 	/// end temp
 
-	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
+	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{name:"clusters api", url:"etc...`
 	return sites
 }
 
@@ -205,16 +206,16 @@ func check_sites_with_goroutines(sites []Site) {
 
 func check_site(site Site, dbwriter_channel chan Site) {
 	/* Checks site, stores data to updated-site, & writes updated-site to channel. */
-	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.label))
+	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.name))
 
 	/// check site
 	mini_start := time.Now()
 	resp, _ := http.Get(site.url)
 	body_bytes, _ := ioutil.ReadAll(resp.Body)
 	text := string(body_bytes)
-	var site_check_result string = "not_found"
+	var site_check_result string = "text_not_found"
 	if strings.Contains(text, site.expected) {
-		site_check_result = "found"
+		site_check_result = "passed"
 	}
 
 	/// store result
@@ -243,7 +244,7 @@ func raiseErr(err error) {
 // 	sites = append(
 // 		sites,
 // 		Site{
-// 			label:    "repo_file",
+// 			name:    "repo_file",
 // 			url:      "https://repository.library.brown.edu/storage/bdr:6758/PDF/",
 // 			expected: "BleedBox", // note: since brace is on following line, this comma is required
 // 		},
@@ -287,7 +288,7 @@ func raiseErr(err error) {
 // 	sites = append(sites, site1, site2)
 // 	/// end temp
 
-// 	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{label:"clusters api", url:"etc...`
+// 	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{name:"clusters api", url:"etc...`
 // 	return sites
 // }
 
