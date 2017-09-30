@@ -26,9 +26,11 @@ type Settings struct {
 }
 
 type Site struct {
-	label    string
-	url      string
-	expected string
+	label                 string
+	url                   string
+	expected              string
+	recent_checked_result string
+	time_taken            time.Duration
 }
 
 type Result struct {
@@ -62,7 +64,7 @@ func main() {
 	rlog.Debug(fmt.Sprintf("now_string, ```%v```", now_string))
 	// rlog.Debug(now_string)
 
-	/// initialize sites array
+	/// initialize sites
 	initialize_sites_from_db()
 	rlog.Debug("sites from db initialized")
 	defer db.Close()
@@ -77,7 +79,8 @@ func main() {
    ---------------------------------------------------------------------- */
 
 func load_settings() Settings {
-	/* Loads settings, eventually for logging and database. */
+	/* Loads settings, eventually for logging and database.
+	   Called by main() */
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
 		raiseErr(err)
@@ -87,7 +90,8 @@ func load_settings() Settings {
 }
 
 func setup_db() *sql.DB {
-	/* Initializes db object and confirms connection. */
+	/* Initializes db object and confirms connection.
+	   Called by main() */
 	var connect_str string = fmt.Sprintf(
 		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
 		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
@@ -112,7 +116,8 @@ func setup_db() *sql.DB {
 
 func initialize_sites_from_db() []Site {
 	/* loads sites from db data
-	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go) */
+	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
+	   Called by main() */
 	sites = []Site{}
 	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite`")
 	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
@@ -132,7 +137,7 @@ func initialize_sites_from_db() []Site {
 		}
 		sites = append(
 			sites,
-			Site{name, url, text_expected},
+			Site{name, url, text_expected, "foo_expected_result", 0}, // label, url-to-check, expected, expected-result, time-duration
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
@@ -152,7 +157,12 @@ func initialize_sites_from_db() []Site {
 
 //
 func check_sites_with_goroutines(sites []Site) {
-	/* Creates channel, kicks off go-routines, prints channel output, and closes channel. */
+	/* Flow:
+	   - creates channel,
+	   - kicks off go-routines to run the web-checks,
+	   - channel writes each check-result to db,
+	   - closes channel.
+	   Called by main() */
 
 	/*
 		TODO flow...
@@ -170,7 +180,7 @@ func check_sites_with_goroutines(sites []Site) {
 	main_start := time.Now()
 
 	/// initialize channel
-	dbwriter_channel := make(chan Result)
+	dbwriter_channel := make(chan Site)
 
 	/// start go routines
 	for _, site_element := range sites {
@@ -182,7 +192,7 @@ func check_sites_with_goroutines(sites []Site) {
 
 	/// output channel data
 	var counter int = 0
-	var channel_output Result
+	var channel_output Site
 	for channel_output = range dbwriter_channel {
 		// rlog.Debug(fmt.Sprintf("counter, ```%v```", counter))
 		// rlog.Debug(fmt.Sprintf("len(sites), ```%v```", len(sites)))
@@ -201,8 +211,8 @@ func check_sites_with_goroutines(sites []Site) {
 
 }
 
-func check_site(site Site, dbwriter_channel chan Result) {
-	/* Checks site, stores data to result, & writes info to channel. */
+func check_site(site Site, dbwriter_channel chan Site) {
+	/* Checks site, stores data to updated-site, & writes updated-site to channel. */
 	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.label))
 
 	/// check site
@@ -217,15 +227,20 @@ func check_site(site Site, dbwriter_channel chan Result) {
 
 	/// store result
 	mini_elapsed := time.Since(mini_start)
-	result_instance := Result{
-		label:        site.label,
-		check_result: site_check_result,
-		time_taken:   mini_elapsed,
-	}
+	// result_instance := Result{
+	// 	label:        site.label,
+	// 	check_result: site_check_result,
+	// 	time_taken:   mini_elapsed,
+	// }
+	site.recent_checked_result = site_check_result
+	site.time_taken = mini_elapsed
 
 	/// write info to channel
-	dbwriter_channel <- result_instance
-	rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
+	// dbwriter_channel <- result_instance
+	// rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
+	dbwriter_channel <- site
+	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
+
 }
 
 func raiseErr(err error) {
