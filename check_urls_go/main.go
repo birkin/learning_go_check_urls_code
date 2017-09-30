@@ -33,18 +33,10 @@ type Site struct {
 	time_taken            time.Duration
 }
 
-type Result struct {
-	label        string
-	check_result string
-	time_taken   time.Duration
-}
-
 var settings Settings
 var sites []Site // i think this declares a slice, not an array
 var db *sql.DB
 var now_string string
-
-// var results []Result
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
@@ -227,17 +219,10 @@ func check_site(site Site, dbwriter_channel chan Site) {
 
 	/// store result
 	mini_elapsed := time.Since(mini_start)
-	// result_instance := Result{
-	// 	label:        site.label,
-	// 	check_result: site_check_result,
-	// 	time_taken:   mini_elapsed,
-	// }
 	site.recent_checked_result = site_check_result
 	site.time_taken = mini_elapsed
 
 	/// write info to channel
-	// dbwriter_channel <- result_instance
-	// rlog.Info(fmt.Sprintf("result_instance after write to channel, ```%#v```", result_instance))
 	dbwriter_channel <- site
 	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
 
