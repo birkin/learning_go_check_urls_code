@@ -213,13 +213,18 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.name))
 
 	/// check site
-	mini_start := time.Now()
-	resp, _ := http.Get(site.url)
-	body_bytes, _ := ioutil.ReadAll(resp.Body)
-	text := string(body_bytes)
 	var site_check_result string = "text_not_found"
-	if strings.Contains(text, site.text_expected) {
-		site_check_result = "passed"
+	mini_start := time.Now()
+	resp, err := http.Get(site.url)
+	if err != nil {
+		rlog.Info(fmt.Sprintf("error accessing site, `%v`; error, ```%v```", site.name, err))
+		site_check_result = "site_not_reachable"
+	} else {
+		body_bytes, _ := ioutil.ReadAll(resp.Body)
+		text := string(body_bytes)
+		if strings.Contains(text, site.text_expected) {
+			site_check_result = "passed"
+		}
 	}
 
 	/// store result
