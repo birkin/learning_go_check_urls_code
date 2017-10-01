@@ -18,11 +18,11 @@ import (
 )
 
 type Settings struct {
-	DB_USERNAME string `envconfig:"DB_USERNAME" default:"default_db_username"`
-	DB_PASSWORD string `envconfig:"DB_PASSWORD" default:"default_db_password"`
-	DB_HOST     string `envconfig:"DB_HOST" default:"default_db_host"`
-	DB_PORT     string `envconfig:"DB_PORT" default:"default_db_port"`
-	DB_NAME     string `envconfig:"DB_NAME" default:"default_db_name"`
+	DB_USERNAME string `envconfig:"DB_USERNAME" required:"true"`
+	DB_PASSWORD string `envconfig:"DB_PASSWORD" required:"true"`
+	DB_HOST     string `envconfig:"DB_HOST" required:"true"`
+	DB_PORT     string `envconfig:"DB_PORT" required:"true"`
+	DB_NAME     string `envconfig:"DB_NAME" required:"true"`
 }
 
 type Site struct {
@@ -82,7 +82,9 @@ func load_settings() Settings {
 	   Called by main() */
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
 	if err != nil {
-		raiseErr(err)
+		msg := fmt.Sprintf("error loading settings, ```%v```", err)
+		rlog.Error(msg)
+		panic(msg)
 	}
 	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
 	return Settings{}
