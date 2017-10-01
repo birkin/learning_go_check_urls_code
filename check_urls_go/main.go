@@ -36,7 +36,8 @@ type Site struct {
 	recent_checked_result       string
 	previous_checked_result     string
 	pre_previous_checked_result string
-	time_taken                  time.Duration
+	next_check_time             time.Time
+	custom_time_taken           time.Duration
 }
 
 var settings Settings
@@ -117,8 +118,8 @@ func initialize_sites_from_db() []Site {
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	   Called by main() */
 	sites = []Site{}
-	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result` FROM `site_check_app_checksite`")
-	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
+	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `next_check_time` FROM `site_check_app_checksite`")
+	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `next_check_time` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
 	rows, err := db.Query(querystring)
 	if err != nil {
@@ -133,13 +134,14 @@ func initialize_sites_from_db() []Site {
 		var email_message string
 		var previous_checked_result string
 		var pre_previous_checked_result string
-		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &previous_checked_result, &pre_previous_checked_result)
+		var next_check_time time.Time
+		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &previous_checked_result, &pre_previous_checked_result, &next_check_time)
 		if err != nil {
 			raiseErr(err)
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result time_taken
+			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
@@ -235,7 +237,7 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	/// store result
 	mini_elapsed := time.Since(mini_start)
 	site.recent_checked_result = site_check_result
-	site.time_taken = mini_elapsed
+	site.custom_time_taken = mini_elapsed
 
 	/// write info to channel
 	dbwriter_channel <- site
