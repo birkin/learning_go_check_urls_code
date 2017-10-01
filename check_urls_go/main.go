@@ -32,6 +32,7 @@ type Site struct {
 	text_expected         string
 	email_addresses       string
 	email_message         string
+	recent_checked_time   time.Time
 	recent_checked_result string
 	time_taken            time.Duration
 }
@@ -134,7 +135,7 @@ func initialize_sites_from_db() []Site {
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, email_message, "insert_check_result_here", 0}, // name, url-to-check, text_expected, expected-result, time-duration
+			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), "insert_check_result_here", 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, time_taken
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
