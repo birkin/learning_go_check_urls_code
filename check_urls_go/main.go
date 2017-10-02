@@ -18,11 +18,12 @@ import (
 )
 
 type Settings struct {
-	DB_USERNAME string `envconfig:"DB_USERNAME" required:"true"`
-	DB_PASSWORD string `envconfig:"DB_PASSWORD" required:"true"`
-	DB_HOST     string `envconfig:"DB_HOST" required:"true"`
-	DB_PORT     string `envconfig:"DB_PORT" required:"true"`
-	DB_NAME     string `envconfig:"DB_NAME" required:"true"`
+	DB_USERNAME       string `envconfig:"DB_USERNAME" required:"true"`
+	DB_PASSWORD       string `envconfig:"DB_PASSWORD" required:"true"`
+	DB_HOST           string `envconfig:"DB_HOST" required:"true"`
+	DB_PORT           string `envconfig:"DB_PORT" required:"true"`
+	DB_NAME           string `envconfig:"DB_NAME" required:"true"`
+	TEST_EMAIL_STRING string `envconfig:"TEST_EMAIL_STRING" required:"true"`
 }
 
 type Site struct {
@@ -143,7 +144,7 @@ func initialize_sites_from_db() []Site {
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
+			Site{id, name, url, text_expected, settings.TEST_EMAIL_STRING, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
 		)
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
