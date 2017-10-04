@@ -248,7 +248,8 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	site.recent_checked_result = site_check_result
 
 	/// determine whether to send email
-	site = run_email_check(site)
+	var bool_val bool = run_email_check(site)
+	rlog.Debug(fmt.Sprintf("bool_val, `%v`", bool_val))
 
 	/// send email if necessary -- TODO
 
@@ -265,11 +266,19 @@ func check_site(site Site, dbwriter_channel chan Site) {
 
 }
 
-func run_email_check(site Site) Site {
+func run_email_check(site Site) bool {
+	/* Determines whether email should be sent. */
 	rlog.Debug("checking whether to send email")
-	return site
+	var bool_val bool = true
+	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
+	num := rand.Intn(2)              // so will be 0 or 1
+	rlog.Info(fmt.Sprintf("num, `%v`", num))
+	if num == 1 {
+		bool_val = false
+	}
+	rlog.Info(fmt.Sprintf("bool_val, `%v`", bool_val))
+	return bool_val
 }
-
 
 // func initialize_sites() []Site {
 // 	/* Populates sites slice.
