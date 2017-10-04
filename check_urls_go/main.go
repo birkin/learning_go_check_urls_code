@@ -101,14 +101,18 @@ func setup_db() *sql.DB {
 	// rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
 	db, err := sql.Open("mysql", connect_str)
 	if err != nil {
-		raiseErr(err)
+		msg := fmt.Sprintf("error connecting to db, ```%v```", err)
+		rlog.Error(msg)
+		panic(msg)
 	}
 	// rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
 
 	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
 	err = db.Ping()
 	if err != nil {
-		raiseErr(err)
+		msg := fmt.Sprintf("error accessing db, ```%v```", err)
+		rlog.Error(msg)
+		panic(msg)
 	}
 	// rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
 	// fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
@@ -127,7 +131,9 @@ func initialize_sites_from_db() []Site {
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
 	rows, err := db.Query(querystring)
 	if err != nil {
-		raiseErr(err)
+		msg := fmt.Sprintf("error querying db, ```%v```", err)
+		rlog.Error(msg)
+		panic(msg)
 	}
 	for rows.Next() {
 		var id int
@@ -141,7 +147,9 @@ func initialize_sites_from_db() []Site {
 		var next_check_time time.Time
 		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &previous_checked_result, &pre_previous_checked_result, &next_check_time)
 		if err != nil {
-			raiseErr(err)
+			msg := fmt.Sprintf("error scanning db rows, ```%v```", err)
+			rlog.Error(msg)
+			panic(msg)
 		}
 		sites = append(
 			sites,
@@ -262,13 +270,6 @@ func run_email_check(site Site) Site {
 	return site
 }
 
-func raiseErr(err error) {
-	/* logs and raises error */
-	if err != nil {
-		rlog.Error(fmt.Sprintf("err, ```%v```", err))
-		panic(err)
-	}
-}
 
 // func initialize_sites() []Site {
 // 	/* Populates sites slice.
