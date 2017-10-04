@@ -45,6 +45,7 @@ var settings Settings
 var sites []Site // i think this declares a slice, not an array
 var db *sql.DB
 var now_string string
+var send_email bool
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
@@ -236,16 +237,29 @@ func check_site(site Site, dbwriter_channel chan Site) {
 			site_check_result = "passed"
 		}
 	}
-
-	/// store result
-	mini_elapsed := time.Since(mini_start)
 	site.recent_checked_result = site_check_result
+
+	/// determine whether to send email
+	site = run_email_check(site)
+
+	/// send email if necessary -- TODO
+
+	/// determine next time-check -- TODO
+
+	/// store other info to site
+	/* TODO, update site object with next time-check */
+	mini_elapsed := time.Since(mini_start)
 	site.custom_time_taken = mini_elapsed
 
 	/// write info to channel
 	dbwriter_channel <- site
 	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
 
+}
+
+func run_email_check(site Site) Site {
+	rlog.Debug("checking whether to send email")
+	return site
 }
 
 func raiseErr(err error) {
