@@ -119,7 +119,8 @@ func setup_db() *sql.DB {
 	// db_k := reflect.ValueOf(db)
 	// fmt.Println("db has Kind: ", db_k.Kind())
 	return db
-}
+
+} // end func setup_db()
 
 func initialize_sites_from_db() []Site {
 	/* Loads sites from db data
@@ -169,9 +170,9 @@ func initialize_sites_from_db() []Site {
 
 	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{name:"clusters api", url:"etc...`
 	return sites
-}
 
-//
+} // end func initialize_sites_from_db()
+
 func check_sites_with_goroutines(sites []Site) {
 	/* Flow:
 	   - creates channel,
@@ -225,7 +226,7 @@ func check_sites_with_goroutines(sites []Site) {
 	main_elapsed := time.Since(main_start)
 	rlog.Info(fmt.Sprintf("main_elapsed, ```%v```", main_elapsed))
 
-}
+} // end func check_sites_with_goroutines()
 
 func check_site(site Site, dbwriter_channel chan Site) {
 	/* Checks site, stores data to updated-site, & writes updated-site to channel. */
@@ -264,7 +265,7 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	dbwriter_channel <- site
 	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
 
-}
+} // end func check_site()
 
 func run_email_check(site Site) bool {
 	/* Determines whether email should be sent. */
