@@ -17,6 +17,17 @@ import (
 	"github.com/romana/rlog"
 )
 
+/*
+Next:
+- check python code for 'save()' work
+	- replicate in go
+	- above should set `next-check-time`
+	- save to db
+- go-routine email call should be to handle_email(), which should:
+	- see if email needs to be sent
+	- send it
+*/
+
 type Settings struct {
 	DB_USERNAME       string `envconfig:"DB_USERNAME" required:"true"`
 	DB_PASSWORD       string `envconfig:"DB_PASSWORD" required:"true"`
