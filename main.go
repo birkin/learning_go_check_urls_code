@@ -1,26 +1,21 @@
 package main
 
-import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
-
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	// "reflect"
 	"strings"
 	"time"
 
-	// "github.com/davecgh/go-spew/spew"      // easy way to pretty-print structs
+	_ "github.com/go-sql-driver/mysql"  // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
 	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
 	"github.com/romana/rlog"
 )
 
-// import "check_urls_stuff/check_urls_code/Libs"
-
 /*
-Next:
+TODO Next:
 - check python code for 'save()' work
 	- replicate in go
 	- above should set `next-check-time`
