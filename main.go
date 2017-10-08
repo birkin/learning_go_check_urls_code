@@ -9,9 +9,10 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"  // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
+	_ "github.com/go-sql-driver/mysql"     // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
 	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
 	"github.com/romana/rlog"
+	// "check_urls_stuff/check_urls_code/Libs"
 )
 
 /*
@@ -63,6 +64,7 @@ func main() {
 	/// initialize settings
 	rlog.Debug(fmt.Sprintf("settings before settings initialized, ```%#v```", settings))
 	load_settings()
+	// Libs.load_settings(Settings)
 
 	/// access db
 	db = setup_db()
