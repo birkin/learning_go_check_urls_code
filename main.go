@@ -17,6 +17,8 @@ import (
 	"github.com/romana/rlog"
 )
 
+// import "check_urls_stuff/check_urls_code/Libs"
+
 /*
 Next:
 - check python code for 'save()' work
