@@ -1,8 +1,8 @@
 /* this file is not yet in use. */
 
-package Libs
+package main
 
-func load_settings(settings Settings) Settings {
+func load_settings() Settings {
 	/* Loads settings, eventually for logging and database.
 	   Called by main() */
 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
