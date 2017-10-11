@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"     // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
-	"github.com/kelseyhightower/envconfig" // binds env vars to settings struct
+	_ "github.com/go-sql-driver/mysql" // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
+	// "github.com/kelseyhightower/envconfig" // binds env vars to settings struct
 	"github.com/romana/rlog"
 	// "check_urls_stuff/check_urls_code/Libs"
 )
@@ -25,15 +25,6 @@ TODO Next:
 	- see if email needs to be sent
 	- send it
 */
-
-type Settings struct {
-	DB_USERNAME       string `envconfig:"DB_USERNAME" required:"true"`
-	DB_PASSWORD       string `envconfig:"DB_PASSWORD" required:"true"`
-	DB_HOST           string `envconfig:"DB_HOST" required:"true"`
-	DB_PORT           string `envconfig:"DB_PORT" required:"true"`
-	DB_NAME           string `envconfig:"DB_NAME" required:"true"`
-	TEST_EMAIL_STRING string `envconfig:"TEST_EMAIL_STRING" required:"true"`
-}
 
 type Site struct {
 	id                          int
@@ -50,7 +41,7 @@ type Site struct {
 	custom_time_taken           time.Duration
 }
 
-var settings Settings
+// var settings Settings
 var sites []Site // i think this declares a slice, not an array
 var db *sql.DB
 var now_string string
@@ -62,12 +53,13 @@ func main() {
 	rlog.Info("\n\nstarting")
 
 	/// initialize settings
-	rlog.Debug(fmt.Sprintf("settings before settings initialized, ```%#v```", settings))
-	load_settings()
-	// Libs.load_settings(Settings)
+	// rlog.Debug(fmt.Sprintf("settings before settings initialized, ```%#v```", settings))
+	// load_settings()
+	settings := load_settings()
+	rlog.Debug(fmt.Sprintf("settings, ```%#v```", settings))
 
 	/// access db
-	db = setup_db()
+	db = setup_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME)
 
 	/// prepare current-time
 	t := time.Now()
@@ -89,26 +81,30 @@ func main() {
    helper functions
    ---------------------------------------------------------------------- */
 
-func load_settings() Settings {
-	/* Loads settings, eventually for logging and database.
-	   Called by main() */
-	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
-	if err != nil {
-		msg := fmt.Sprintf("error loading settings, ```%v```", err)
-		rlog.Error(msg)
-		panic(msg)
-	}
-	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
-	return Settings{}
-}
+// func load_settings() Settings {
+// 	/* Loads settings, eventually for logging and database.
+// 	   Called by main() */
+// 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
+// 	if err != nil {
+// 		msg := fmt.Sprintf("error loading settings, ```%v```", err)
+// 		rlog.Error(msg)
+// 		panic(msg)
+// 	}
+// 	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
+// 	return Settings{}
+// }
 
-func setup_db() *sql.DB {
+func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
 	/* Initializes db object and confirms connection.
 	   Called by main() */
+	// var connect_str string = fmt.Sprintf(
+	// 	"%v:%v@tcp(%v:%v)/%v?parseTime=true",
+	// 	settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
+	// rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
 	var connect_str string = fmt.Sprintf(
 		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
-		settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
-	// rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
+		user, pass, host, port, name) // user:password@tcp(host:port)/dbname
+
 	db, err := sql.Open("mysql", connect_str)
 	if err != nil {
 		msg := fmt.Sprintf("error connecting to db, ```%v```", err)
@@ -162,10 +158,15 @@ func initialize_sites_from_db() []Site {
 			rlog.Error(msg)
 			panic(msg)
 		}
+		// sites = append(
+		// 	sites,
+		// 	Site{id, name, url, text_expected, settings.TEST_EMAIL_STRING, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
+		// )
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, settings.TEST_EMAIL_STRING, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
+			Site{id, name, url, text_expected, "test-email-string", email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
 		)
+
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
 	db.Close()
