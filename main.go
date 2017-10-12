@@ -9,10 +9,8 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql" // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
-	// "github.com/kelseyhightower/envconfig" // binds env vars to settings struct
+	// _ "github.com/go-sql-driver/mysql" // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
 	"github.com/romana/rlog"
-	// "check_urls_stuff/check_urls_code/Libs"
 )
 
 /*
@@ -53,11 +51,11 @@ func main() {
 	rlog.Info("\n\nstarting")
 
 	/// initialize settings
-	settings := load_settings()
+	settings := load_settings()  // settings.go
 	rlog.Debug(fmt.Sprintf("settings, ```%#v```", settings))
 
 	/// access db
-	db = setup_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME)
+	db = setup_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME)  // db.go
 
 	/// prepare current-time
 	t := time.Now()
@@ -78,28 +76,6 @@ func main() {
 /* ----------------------------------------------------------------------
    helper functions
    ---------------------------------------------------------------------- */
-
-func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
-	/* Initializes db object and confirms connection.
-	   Called by main() */
-	var connect_str string = fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
-		user, pass, host, port, name) // user:password@tcp(host:port)/dbname
-	db, err := sql.Open("mysql", connect_str)
-	if err != nil {
-		msg := fmt.Sprintf("error connecting to db, ```%v```", err)
-		rlog.Error(msg)
-		panic(msg)
-	}
-	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
-	err = db.Ping()
-	if err != nil {
-		msg := fmt.Sprintf("error accessing db, ```%v```", err)
-		rlog.Error(msg)
-		panic(msg)
-	}
-	return db
-} // end func setup_db()
 
 func initialize_sites_from_db() []Site {
 	/* Loads sites from db data
