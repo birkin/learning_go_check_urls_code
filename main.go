@@ -53,8 +53,6 @@ func main() {
 	rlog.Info("\n\nstarting")
 
 	/// initialize settings
-	// rlog.Debug(fmt.Sprintf("settings before settings initialized, ```%#v```", settings))
-	// load_settings()
 	settings := load_settings()
 	rlog.Debug(fmt.Sprintf("settings, ```%#v```", settings))
 
@@ -81,38 +79,18 @@ func main() {
    helper functions
    ---------------------------------------------------------------------- */
 
-// func load_settings() Settings {
-// 	/* Loads settings, eventually for logging and database.
-// 	   Called by main() */
-// 	err := envconfig.Process("url_check_", &settings) // env settings look like `URL_CHECK__THE_SETTING`
-// 	if err != nil {
-// 		msg := fmt.Sprintf("error loading settings, ```%v```", err)
-// 		rlog.Error(msg)
-// 		panic(msg)
-// 	}
-// 	rlog.Debug(fmt.Sprintf("settings after settings initialized, ```%#v```", settings))
-// 	return Settings{}
-// }
-
 func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
 	/* Initializes db object and confirms connection.
 	   Called by main() */
-	// var connect_str string = fmt.Sprintf(
-	// 	"%v:%v@tcp(%v:%v)/%v?parseTime=true",
-	// 	settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // user:password@tcp(host:port)/dbname
-	// rlog.Debug(fmt.Sprintf("connect_str, ```%v```", connect_str))
 	var connect_str string = fmt.Sprintf(
 		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
 		user, pass, host, port, name) // user:password@tcp(host:port)/dbname
-
 	db, err := sql.Open("mysql", connect_str)
 	if err != nil {
 		msg := fmt.Sprintf("error connecting to db, ```%v```", err)
 		rlog.Error(msg)
 		panic(msg)
 	}
-	// rlog.Debug(fmt.Sprintf("db after open, ```%v```", db))
-
 	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
 	err = db.Ping()
 	if err != nil {
@@ -120,12 +98,7 @@ func setup_db(user string, pass string, host string, port string, name string) *
 		rlog.Error(msg)
 		panic(msg)
 	}
-	// rlog.Debug(fmt.Sprintf("db after ping, ```%v```", db))
-	// fmt.Println("db has TypeOf: ", reflect.TypeOf(db))
-	// db_k := reflect.ValueOf(db)
-	// fmt.Println("db has Kind: ", db_k.Kind())
 	return db
-
 } // end func setup_db()
 
 func initialize_sites_from_db() []Site {
