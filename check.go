@@ -119,12 +119,12 @@ func check_site(site Site, dbwriter_channel chan Site) {
 func run_email_check(site Site) bool {
 	/* Determines whether email should be sent. */
 	rlog.Debug("checking whether to send email")
-	var bool_val bool = true
+	var bool_val bool = false
 	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
 	num := rand.Intn(2)              // so will be 0 or 1
 	rlog.Info(fmt.Sprintf("num, `%v`", num))
 	if num == 1 {
-		bool_val = false
+		bool_val = true
 	}
 	rlog.Info(fmt.Sprintf("bool_val, `%v`", bool_val))
 	return bool_val
