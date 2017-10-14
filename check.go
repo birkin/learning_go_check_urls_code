@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/romana/rlog"
+	"io/ioutil"
+	"net/http"
+	"strings"
 	"time"
+
+	"github.com/romana/rlog"
 )
 
 func check_sites_with_goroutines(sites []Site) {
@@ -62,3 +66,51 @@ func check_sites_with_goroutines(sites []Site) {
 	rlog.Info(fmt.Sprintf("main_elapsed, ```%v```", main_elapsed))
 
 } // end func check_sites_with_goroutines()
+
+func check_site(site Site, dbwriter_channel chan Site) {
+	/* Checks site, stores data to updated-site, & writes updated-site to channel. */
+	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.name))
+
+	/// check site
+	var site_check_result string = "init"
+	mini_start_time := time.Now()
+	resp, err := http.Get(site.url)
+	if err != nil {
+		rlog.Info(fmt.Sprintf("error accessing site, `%v`; error, ```%v```", site.name, err))
+		site_check_result = "url_not_accessible"
+	} else {
+		body_bytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			rlog.Info(fmt.Sprintf("error reading response from site, `%v`; error, ```%v```", site.name, err))
+			site_check_result = "unable_to_read_response"
+		}
+		text := string(body_bytes)
+		if strings.Contains(text, site.text_expected) {
+			site_check_result = "passed"
+		} else {
+			site_check_result = "text_not_found"
+		}
+	}
+
+	/// update site-object
+	site.pre_previous_checked_result = site.previous_checked_result
+	site.previous_checked_result = site.recent_checked_result
+	site.recent_checked_result = site_check_result
+	site.recent_checked_time = time.Now()
+
+	/// determine whether to send email
+	// var bool_val bool = run_email_check(site)
+	// rlog.Debug(fmt.Sprintf("bool_val, `%v`", bool_val))
+
+	/// determine next time-check -- TODO
+
+	/// store other info to site
+	/* TODO, update site object with next time-check */
+	mini_elapsed := time.Since(mini_start_time)
+	site.custom_time_taken = mini_elapsed
+
+	/// write info to channel for db save
+	dbwriter_channel <- site
+	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
+
+} // end func check_site()
