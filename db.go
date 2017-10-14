@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+func save_check_result(site Site) {
+	rlog.Info(fmt.Sprintf("will save check-result to db for site, ```%#v```", site))
+}
+
 func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
 	/* Initializes db object and confirms connection.
 	   Called by main() */
