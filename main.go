@@ -3,10 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"math/rand"
 	"time"
 
-	// _ "github.com/go-sql-driver/mysql" // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
 	"github.com/romana/rlog"
 )
 
@@ -64,26 +62,8 @@ func main() {
 	defer db.Close()
 
 	/// call worker function
-	check_sites_with_goroutines(sites)
+	check_sites_with_goroutines(sites) // check.go
 
 } // end func main()
-
-/* ----------------------------------------------------------------------
-   helper functions
-   ---------------------------------------------------------------------- */
-
-func run_email_check(site Site) bool {
-	/* Determines whether email should be sent. */
-	rlog.Debug("checking whether to send email")
-	var bool_val bool = true
-	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
-	num := rand.Intn(2)              // so will be 0 or 1
-	rlog.Info(fmt.Sprintf("num, `%v`", num))
-	if num == 1 {
-		bool_val = false
-	}
-	rlog.Info(fmt.Sprintf("bool_val, `%v`", bool_val))
-	return bool_val
-}
 
 /// EOF

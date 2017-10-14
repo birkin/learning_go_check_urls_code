@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -114,3 +115,17 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
 
 } // end func check_site()
+
+func run_email_check(site Site) bool {
+	/* Determines whether email should be sent. */
+	rlog.Debug("checking whether to send email")
+	var bool_val bool = true
+	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
+	num := rand.Intn(2)              // so will be 0 or 1
+	rlog.Info(fmt.Sprintf("num, `%v`", num))
+	if num == 1 {
+		bool_val = false
+	}
+	rlog.Info(fmt.Sprintf("bool_val, `%v`", bool_val))
+	return bool_val
+}
