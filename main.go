@@ -30,6 +30,7 @@ type Site struct {
 	recent_checked_result       string
 	previous_checked_result     string
 	pre_previous_checked_result string
+	calculated_seconds          int
 	next_check_time             time.Time
 	custom_time_taken           time.Duration
 }
