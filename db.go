@@ -22,36 +22,14 @@ func save_check_result(site Site) {
 	// 	)
 }
 
-// func calc_next_check_time(site Site) time.Time {
-// 	next_check_time := time.Now()
-// 	var next_check_time_description string = fmt.Sprintf("%v", next_check_time.Format("2006-01-02 15:04:05"))
-// 	rlog.Debug(fmt.Sprintf("TEMP next_check_time_description, ```%v```", next_check_time_description))
-// 	return next_check_time
-// }
-
 func calc_next_check_time(site Site) time.Time {
-	rlog.Debug(fmt.Sprintf("site.calculated_seconds, ```%v```", site.calculated_seconds))
+	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
 	t := time.Now()
 	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
-	// next_check_time := t.Add(time.Second * 10)
-
-	// var a = 10
-	// fmt.Println("a has TypeOf: ", reflect.TypeOf(a))
-	// a_k := reflect.ValueOf(a)
-	// fmt.Println("a has Kind: ", a_k.Kind())
-
-	// fmt.Println("b has TypeOf: ", reflect.TypeOf(site.calculated_seconds))
-	// b_k := reflect.ValueOf(site.calculated_seconds)
-	// fmt.Println("b has Kind: ", b_k.Kind())
-
 	duration := time.Second * time.Duration(site.calculated_seconds)
 	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
-
 	next_check_time := t.Add(duration)
 	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
-	var next_check_time_description string = fmt.Sprintf("%v", next_check_time.Format("2006-01-02 15:04:05"))
-	rlog.Debug(fmt.Sprintf("TEMP next_check_time_description, ```%v```", next_check_time_description))
-
 	return next_check_time
 }
 
