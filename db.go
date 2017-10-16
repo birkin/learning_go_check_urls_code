@@ -47,8 +47,11 @@ func calc_next_check_time(site Site) time.Time {
 	duration := time.Second * time.Duration(site.calculated_seconds)
 	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
 
-	next_check_time := t.Add(time.Second * duration)
+	next_check_time := t.Add(duration)
 	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
+	var next_check_time_description string = fmt.Sprintf("%v", next_check_time.Format("2006-01-02 15:04:05"))
+	rlog.Debug(fmt.Sprintf("TEMP next_check_time_description, ```%v```", next_check_time_description))
+
 	return next_check_time
 }
 
