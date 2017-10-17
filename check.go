@@ -96,6 +96,8 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	site.previous_checked_result = site.recent_checked_result
 	site.recent_checked_result = site_check_result
 	site.recent_checked_time = time.Now()
+	site.next_check_time = calc_next_check_time(site)
+	rlog.Debug(fmt.Sprintf("calculated next_check_time, ```%v```", site.next_check_time))
 
 	/// determine whether to send email
 	// var bool_val bool = run_email_check(site)
@@ -113,6 +115,17 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	rlog.Info(fmt.Sprintf("site-info after write to channel, ```%#v```", site))
 
 } // end func check_site()
+
+func calc_next_check_time(site Site) time.Time {
+	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
+	t := time.Now()
+	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
+	duration := time.Second * time.Duration(site.calculated_seconds)
+	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
+	next_check_time := t.Add(duration)
+	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
+	return next_check_time
+}
 
 func run_email_check(site Site) bool {
 	/* Determines whether email should be sent. */
