@@ -22,17 +22,6 @@ func save_check_result(site Site) {
 	// 	)
 }
 
-// func calc_next_check_time(site Site) time.Time {
-// 	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
-// 	t := time.Now()
-// 	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
-// 	duration := time.Second * time.Duration(site.calculated_seconds)
-// 	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
-// 	next_check_time := t.Add(duration)
-// 	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
-// 	return next_check_time
-// }
-
 func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
 	/* Initializes db object and confirms connection.
 	   Called by main() */
