@@ -10,9 +10,7 @@ import (
 
 /*
 TODO Next:
-- check python code for 'save()' work
-	- replicate in go
-	- above should set `next-check-time`
+- check python code for any extra 'save()' work (next-check-time already calculated and stored to site object)
 	- save to db
 - go-routine email call should be to handle_email(), which should:
 	- see if email needs to be sent
