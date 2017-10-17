@@ -35,8 +35,6 @@ func check_sites_with_goroutines(sites []Site) {
 		go check_site(site_element, dbwriter_channel)
 	}
 
-	// rlog.Info(fmt.Sprintf("len(dbwriter_channel), ```%v```", len(dbwriter_channel)))
-
 	/// handle channel data
 	var counter int = 0
 	var channel_site_data Site
@@ -51,7 +49,6 @@ func check_sites_with_goroutines(sites []Site) {
 		rlog.Info("just called run_email_check()")
 		rlog.Info(fmt.Sprintf("channel-data, ```%#v```", channel_site_data))
 		if counter == len(sites) {
-			// rlog.Info("about to close channel")
 			close(dbwriter_channel)
 			rlog.Info("channel closed")
 			break // shouldn't be needed
@@ -63,7 +60,8 @@ func check_sites_with_goroutines(sites []Site) {
 } // end func check_sites_with_goroutines()
 
 func check_site(site Site, dbwriter_channel chan Site) {
-	/* Checks site, calculates next-check-time, updates site-object, & writes updated-site to channel. */
+	/*	Checks site, calculates next-check-time, updates site-object, & writes updated-site to channel.
+		Called as go-routine by check_sites_with_goroutines()  */
 	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.name))
 
 	/// check site
@@ -103,8 +101,6 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	// var bool_val bool = run_email_check(site)
 	// rlog.Debug(fmt.Sprintf("bool_val, `%v`", bool_val))
 
-	/// determine next time-check -- TODO
-
 	/// store other info to site
 	/* TODO, update site object with next time-check */
 	mini_elapsed := time.Since(mini_start_time)
@@ -117,6 +113,8 @@ func check_site(site Site, dbwriter_channel chan Site) {
 } // end func check_site()
 
 func calc_next_check_time(site Site) time.Time {
+	/*	Calculates next check time.
+		Called by check_site()  */
 	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
 	t := time.Now()
 	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
@@ -128,7 +126,8 @@ func calc_next_check_time(site Site) time.Time {
 }
 
 func run_email_check(site Site) bool {
-	/* Determines whether email should be sent. */
+	/*	Determines whether email should be sent.
+		Called as go-routine by check_sites_with_goroutines()  */
 	rlog.Debug("checking whether to send email")
 	var bool_val bool = false
 	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
