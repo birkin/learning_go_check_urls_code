@@ -66,7 +66,7 @@ func initialize_sites_from_db(db *sql.DB) []Site {
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, "test-email-string", email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
+			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
 		)
 
 	}
