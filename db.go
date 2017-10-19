@@ -90,14 +90,20 @@ func save_check_result(site Site) {
 	/* 	Saves data to db.
 	Called by: check.go/check_sites_with_goroutines() */
 	rlog.Info(fmt.Sprintf("will save check-result to db for site, ```%#v```", site))
-	// var next_check_time time.Time = calc_next_check_time(site)
-	// rlog.Debug(fmt.Sprintf("calculated next_check_time, ```%v```", next_check_time))
 
-	// var sqlstring string = fmt.Sprintf(
-	// 	"UPDATE `site_check_app_checksite`
-	// 	SET `pre_previous_checked_result`=site.previous_checked_result, `previous_checked_result`=site.recent_checked_result, `next_check_time`=site.next_check_time
-	// 	WHERE `id`=site.id"
+	var sql_save_string string = fmt.Sprintf(
+		"UPDATE `site_check_app_checksite` "+
+			"SET `pre_previous_checked_result`='%v', `previous_checked_result`='%v', `next_check_time`='%v' "+
+			"WHERE `id`=%v;",
+		site.previous_checked_result, site.recent_checked_result, site.next_check_time, site.id)
+	rlog.Debug(fmt.Sprintf("sql_save_string, ```%v```", sql_save_string))
+
+	// var sql_save_string string = fmt.Sprintf(
+	// 	"UPDATE `site_check_app_checksite` " +
+	// 	"SET `pre_previous_checked_result`=site.previous_checked_result, `previous_checked_result`=site.recent_checked_result, `next_check_time`=site.next_check_time " +
+	// 	"WHERE `id`=site.id;"
 	// 	)
+
 }
 
 // func initialize_sites() []Site {
