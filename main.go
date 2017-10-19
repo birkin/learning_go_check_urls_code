@@ -61,6 +61,12 @@ func main() {
 	rlog.Debug("sites from db initialized")
 	defer db.Close()
 
+	/// TEMP email hijack
+	for idx, _ := range sites {
+		sites[idx].email_addresses = "birkin_diana@brown.edu, birkin.diana@gmail.com"
+	}
+	rlog.Info(fmt.Sprintf("updated sites, ```%#v```", sites)) // prints, eg, `{name:"clusters api", url:"etc...`
+
 	/// call worker function
 	check_sites_with_goroutines(sites) // check.go
 
