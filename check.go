@@ -65,7 +65,7 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	rlog.Debug(fmt.Sprintf("go routine started for site, ```%v```", site.name))
 
 	/// check site
-	var site_check_result string = "init"
+	var site_check_result string = "site_check_result_init"
 	mini_start_time := time.Now()
 	resp, err := http.Get(site.url)
 	if err != nil {

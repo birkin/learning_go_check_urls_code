@@ -37,7 +37,7 @@ func initialize_sites_from_db(db *sql.DB) []Site {
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	   Called by main() */
 	sites = []Site{}
-	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `site_check_app_checksite`")
+	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `site_check_app_checksite`")
 	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `next_check_time` FROM `site_check_app_checksite`")
 	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
@@ -54,11 +54,12 @@ func initialize_sites_from_db(db *sql.DB) []Site {
 		var text_expected string
 		var email_addresses string
 		var email_message string
+		var recent_checked_result string
 		var previous_checked_result string
 		var pre_previous_checked_result string
 		var calculated_seconds int
 		var next_check_time time.Time
-		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &previous_checked_result, &pre_previous_checked_result, &calculated_seconds, &next_check_time)
+		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &recent_checked_result, &previous_checked_result, &pre_previous_checked_result, &calculated_seconds, &next_check_time)
 		if err != nil {
 			msg := fmt.Sprintf("error scanning db rows, ```%v```", err)
 			rlog.Error(msg)
@@ -66,7 +67,7 @@ func initialize_sites_from_db(db *sql.DB) []Site {
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), "insert_check_result_here", previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
+			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), recent_checked_result, previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
 		)
 
 	}
