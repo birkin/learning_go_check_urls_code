@@ -97,11 +97,13 @@ func save_check_result(site Site) {
 	db = setup_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // db.go
 	defer db.Close()
 
+	var next_check_time_string string = site.next_check_time.Format("2006-01-02 15:04:05")
+
 	var sql_save_string string = fmt.Sprintf(
 		"UPDATE `site_check_app_checksite` "+
 			"SET `pre_previous_checked_result`='%v', `previous_checked_result`='%v', `next_check_time`='%v' "+
 			"WHERE `id`=%v;",
-		site.previous_checked_result, site.recent_checked_result, site.next_check_time, site.id)
+		site.previous_checked_result, site.recent_checked_result, next_check_time_string, site.id)
 	rlog.Debug(fmt.Sprintf("sql_save_string, ```%v```", sql_save_string))
 
 	// var sql_save_string string = fmt.Sprintf(
