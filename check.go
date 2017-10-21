@@ -97,14 +97,10 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	site.next_check_time = calc_next_check_time(site)
 	rlog.Debug(fmt.Sprintf("calculated next_check_time, ```%v```", site.next_check_time))
 
-	/// determine whether to send email
-	// var bool_val bool = run_email_check(site)
-	// rlog.Debug(fmt.Sprintf("bool_val, `%v`", bool_val))
-
 	/// store other info to site
-	/* TODO, update site object with next time-check */
-	mini_elapsed := time.Since(mini_start_time)
-	site.custom_time_taken = mini_elapsed
+	// mini_elapsed := time.Since(mini_start_time)
+	// site.custom_time_taken = mini_elapsed
+	site.custom_time_taken = time.Since(mini_start_time)
 
 	/// write info to channel for db save
 	dbwriter_channel <- site

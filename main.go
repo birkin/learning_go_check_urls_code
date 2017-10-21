@@ -10,11 +10,10 @@ import (
 
 /*
 TODO Next:
-- check python code for any extra 'save()' work (next-check-time already calculated and stored to site object)
-	- √ temporarily put email-addresses string into a setting and use it.
-	- log sql update querystring
-		- handle "insert_check_result_here"
-	- save to db
+- √ check python code for any extra 'save()' work (next-check-time already calculated and stored to site object)
+- √ temporarily put email-addresses string into a setting and use it.
+- √ log sql update querystring
+- save to db
 - go-routine email call should be to handle_email(), which should:
 	- see if email needs to be sent
 	- send it
