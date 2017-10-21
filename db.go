@@ -92,6 +92,11 @@ func save_check_result(site Site) {
 	Called by: check.go/check_sites_with_goroutines() */
 	rlog.Info(fmt.Sprintf("will save check-result to db for site, ```%#v```", site))
 
+	settings := load_settings() // settings.go
+	rlog.Debug(fmt.Sprintf("settings, ```%#v```", settings))
+	db = setup_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // db.go
+	defer db.Close()
+
 	var sql_save_string string = fmt.Sprintf(
 		"UPDATE `site_check_app_checksite` "+
 			"SET `pre_previous_checked_result`='%v', `previous_checked_result`='%v', `next_check_time`='%v' "+
@@ -104,6 +109,10 @@ func save_check_result(site Site) {
 	// 	"SET `pre_previous_checked_result`=site.previous_checked_result, `previous_checked_result`=site.recent_checked_result, `next_check_time`=site.next_check_time " +
 	// 	"WHERE `id`=site.id;"
 	// 	)
+
+	result, err := db.Exec(sql_save_string)
+	rlog.Debug(fmt.Sprintf("result, ```%v```", result))
+	rlog.Debug(fmt.Sprintf("err, ```%v```", err))
 
 }
 

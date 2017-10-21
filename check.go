@@ -98,8 +98,6 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	rlog.Debug(fmt.Sprintf("calculated next_check_time, ```%v```", site.next_check_time))
 
 	/// store other info to site
-	// mini_elapsed := time.Since(mini_start_time)
-	// site.custom_time_taken = mini_elapsed
 	site.custom_time_taken = time.Since(mini_start_time)
 
 	/// write info to channel for db save
