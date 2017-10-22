@@ -100,24 +100,15 @@ func save_check_result(site Site) {
 	defer db.Close()
 
 	var next_check_time_string string = site.next_check_time.Format("2006-01-02 15:04:05")
-
 	var sql_save_string string = fmt.Sprintf(
 		"UPDATE `site_check_app_checksite` "+
-			"SET `pre_previous_checked_result`='%v', `previous_checked_result`='%v', `next_check_time`='%v' "+
+			"SET `pre_previous_checked_result`='%v', `previous_checked_result`='%v', `recent_checked_result`='%v', `next_check_time`='%v' "+
 			"WHERE `id`=%v;",
-		site.previous_checked_result, site.recent_checked_result, next_check_time_string, site.id)
+		site.pre_previous_checked_result, site.previous_checked_result, site.recent_checked_result, next_check_time_string, site.id)
 	rlog.Debug(fmt.Sprintf("sql_save_string, ```%v```", sql_save_string))
-
-	// var sql_save_string string = fmt.Sprintf(
-	// 	"UPDATE `site_check_app_checksite` " +
-	// 	"SET `pre_previous_checked_result`=site.previous_checked_result, `previous_checked_result`=site.recent_checked_result, `next_check_time`=site.next_check_time " +
-	// 	"WHERE `id`=site.id;"
-	// 	)
-
 	result, err := db.Exec(sql_save_string)
 	rlog.Debug(fmt.Sprintf("result, ```%v```", result))
 	rlog.Debug(fmt.Sprintf("err, ```%v```", err))
-
 }
 
 // func initialize_sites() []Site {
