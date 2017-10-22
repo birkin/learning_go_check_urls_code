@@ -12,28 +12,6 @@ import (
 
 var db *sql.DB
 
-func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
-	/* Initializes db object and confirms connection.
-	   Called by main() */
-	var connect_str string = fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
-		user, pass, host, port, name) // user:password@tcp(host:port)/dbname
-	db, err := sql.Open("mysql", connect_str)
-	if err != nil {
-		msg := fmt.Sprintf("error connecting to db, ```%v```", err)
-		rlog.Error(msg)
-		panic(msg)
-	}
-	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
-	err = db.Ping()
-	if err != nil {
-		msg := fmt.Sprintf("error accessing db, ```%v```", err)
-		rlog.Error(msg)
-		panic(msg)
-	}
-	return db
-} // end func setup_db()
-
 func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST string, DB_PORT string, DB_NAME string) []Site {
 	/* Loads sites from db data
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
@@ -89,6 +67,27 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 
 } // end func initialize_sites_from_db()
 
+func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
+	/* Initializes db object and confirms connection.
+	   Called by initialize_sites_from_db() and save_check_result() */
+	var connect_str string = fmt.Sprintf(
+		"%v:%v@tcp(%v:%v)/%v?parseTime=true",
+		user, pass, host, port, name) // user:password@tcp(host:port)/dbname
+	db, err := sql.Open("mysql", connect_str)
+	if err != nil {
+		msg := fmt.Sprintf("error connecting to db, ```%v```", err)
+		rlog.Error(msg)
+		panic(msg)
+	}
+	/// sql.Open doesn't open a connection, so validate DSN (data source name) data
+	err = db.Ping()
+	if err != nil {
+		msg := fmt.Sprintf("error accessing db, ```%v```", err)
+		rlog.Error(msg)
+		panic(msg)
+	}
+	return db
+} // end func setup_db()
 
 func save_check_result(site Site) {
 	/* 	Saves data to db.
