@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var db *sql.DB
+
 func setup_db(user string, pass string, host string, port string, name string) *sql.DB {
 	/* Initializes db object and confirms connection.
 	   Called by main() */
@@ -32,13 +34,14 @@ func setup_db(user string, pass string, host string, port string, name string) *
 	return db
 } // end func setup_db()
 
-func initialize_sites_from_db(db *sql.DB) []Site {
+func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST string, DB_PORT string, DB_NAME string) []Site {
 	/* Loads sites from db data
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
 	   Called by main() */
+	db = setup_db(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
+	defer db.Close()
 	sites = []Site{}
 	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `site_check_app_checksite`")
-	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `next_check_time` FROM `site_check_app_checksite`")
 	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `site_check_app_checksite` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", now_string)
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
 	rows, err := db.Query(querystring)
@@ -72,7 +75,6 @@ func initialize_sites_from_db(db *sql.DB) []Site {
 
 	}
 	// rlog.Debug(fmt.Sprintf("rows, ```%v```", rows))
-	db.Close()
 
 	/// temp -- to just take a subset of the above during testing
 	rand.Seed(time.Now().Unix()) // initialize global pseudo random generator
@@ -86,6 +88,7 @@ func initialize_sites_from_db(db *sql.DB) []Site {
 	return sites
 
 } // end func initialize_sites_from_db()
+
 
 func save_check_result(site Site) {
 	/* 	Saves data to db.
@@ -171,4 +174,4 @@ func save_check_result(site Site) {
 
 // 	rlog.Info(fmt.Sprintf("sites to process, ```%#v```", sites)) // prints, eg, `{name:"clusters api", url:"etc...`
 // 	return sites
-// }
+// }  // end func initialize_sites()
