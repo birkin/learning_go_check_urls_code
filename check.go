@@ -86,15 +86,15 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	}
 
 	/// calculate next-check-time
-	original_next_check_time := site.next_check_time
-	rlog.Debug(fmt.Sprintf("original_next_check_time, ```%v```", original_next_check_time))
+	calculated_next_check_time := calc_next_check_time(site, site_check_result)
 
 	/// update site-object
 	site.pre_previous_checked_result = site.previous_checked_result
 	site.previous_checked_result = site.recent_checked_result
 	site.recent_checked_result = site_check_result
 	site.recent_checked_time = time.Now()
-	site.next_check_time = calc_next_check_time(site)
+	// site.next_check_time = calc_next_check_time(site)
+	site.next_check_time = calculated_next_check_time
 	rlog.Debug(fmt.Sprintf("calculated next_check_time, ```%v```", site.next_check_time))
 
 	/// store other info to site
@@ -106,18 +106,47 @@ func check_site(site Site, dbwriter_channel chan Site) {
 
 } // end func check_site()
 
-func calc_next_check_time(site Site) time.Time {
+func evaluate_check_result_action(site Site, site_check_result string) string {
+	/*	Caculates action to take.
+		Called by check_site()  */
+	action := "foo"
+	rlog.Debug(fmt.Sprintf("action, ```%v```", action))
+	return action
+}
+
+func calc_next_check_time(site Site, site_check_result string) time.Time {
 	/*	Calculates next check time.
 		Called by check_site()  */
+	original_next_check_time := site.next_check_time
+	rlog.Debug(fmt.Sprintf("original_next_check_time, ```%v```", original_next_check_time))
 	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
 	t := time.Now()
 	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
-	duration := time.Second * time.Duration(site.calculated_seconds)
-	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
+	var duration time.Duration
+	if site_check_result == "passed" {
+		duration = time.Second * time.Duration(site.calculated_seconds)
+		rlog.Debug(fmt.Sprintf("passed duration, ```%v```", duration))
+	} else {
+		duration = time.Minute * time.Duration(5) // eventually move this to a recheck_interval setting
+		rlog.Debug(fmt.Sprintf("NOT-passed duration, ```%v```", duration))
+	}
 	next_check_time := t.Add(duration)
 	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
 	return next_check_time
 }
+
+// func calc_next_check_time(site Site) time.Time {
+// 	/*	Calculates next check time.
+// 		Called by check_site()  */
+// 	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
+// 	t := time.Now()
+// 	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
+// 	duration := time.Second * time.Duration(site.calculated_seconds)
+// 	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
+// 	next_check_time := t.Add(duration)
+// 	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
+// 	return next_check_time
+// }
 
 func run_email_check(site Site) bool {
 	/*	Determines whether email should be sent.
