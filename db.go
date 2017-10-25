@@ -90,8 +90,8 @@ func setup_db(user string, pass string, host string, port string, name string) *
 } // end func setup_db()
 
 func save_check_result(site Site) {
-	/* 	Saves data to db.
-	Called by: check.go/check_sites_with_goroutines() */
+	/*  Saves data to db.
+	    Called by: check.go/check_sites_with_goroutines() */
 	rlog.Info(fmt.Sprintf("will save check-result to db for site, ```%#v```", site))
 
 	settings := load_settings() // settings.go
