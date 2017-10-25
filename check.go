@@ -47,7 +47,6 @@ func check_sites_with_goroutines(sites []Site) {
 		/// go routine for checking whether email should be sent, and sending it if necessary
 		go run_email_check(channel_site_data)
 		rlog.Info("just called run_email_check()")
-		rlog.Info(fmt.Sprintf("channel-data, ```%#v```", channel_site_data))
 		if counter == len(sites) {
 			close(dbwriter_channel)
 			rlog.Info("channel closed")
@@ -137,9 +136,7 @@ func calc_next_check_time(site Site, site_check_result string) time.Time {
 func run_email_check(site Site) {
 	/*	Determines whether email should be sent.
 		Called as go-routine by check_sites_with_goroutines()  */
-	rlog.Debug("checking whether to send email")
 	send, type_send := assess_email_need(site)
-	// send_email(site, type_send)
 	if send == true {
 		send_email(site, type_send)
 	}
@@ -147,12 +144,20 @@ func run_email_check(site Site) {
 }
 
 func assess_email_need(site Site) (bool, string) {
-	rlog.Debug("hereA")
-	return false, "send_no_email"
+	/*  Determines if email needs to be sent, and, if so,whether it should be a `service-back-up` or a `service-down` email.
+	    Called by run_email_check()  */
+	// send := false
+	// send_type := "send_no_email"
+	send := true
+	send_type := "send_success_email"
+	rlog.Debug(fmt.Sprintf("send, `%v`; send_type, `%v`", send, send_type))
+	return send, send_type
 }
 
 func send_email(site Site, type_send string) {
-	rlog.Debug("hereB")
+	/*  Sends email if called.
+	    Called by run_email_check()  */
+	rlog.Debug("email sent")
 	return
 }
 
