@@ -13,9 +13,11 @@ TODO Next:
 - √ log sql update querystring
 - √ save to db
 - √ refactor initial db call
-- go-routine email call should be to handle_email(), which should:
+- √ go-routine email call should be to run_email_check(), which should:
 	- see if email needs to be sent
 	- send it
+- refactor call to check email to call it from main.go
+- move run_email_check() into its own email.go module
 */
 
 type Site struct {
