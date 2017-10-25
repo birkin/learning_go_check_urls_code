@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"math/rand"
+	// "math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -93,7 +93,6 @@ func check_site(site Site, dbwriter_channel chan Site) {
 	site.previous_checked_result = site.recent_checked_result
 	site.recent_checked_result = site_check_result
 	site.recent_checked_time = time.Now()
-	// site.next_check_time = calc_next_check_time(site)
 	site.next_check_time = calculated_next_check_time
 	rlog.Debug(fmt.Sprintf("calculated next_check_time, ```%v```", site.next_check_time))
 
@@ -106,13 +105,13 @@ func check_site(site Site, dbwriter_channel chan Site) {
 
 } // end func check_site()
 
-func evaluate_check_result_action(site Site, site_check_result string) string {
-	/*	Caculates action to take.
-		Called by check_site()  */
-	action := "foo"
-	rlog.Debug(fmt.Sprintf("action, ```%v```", action))
-	return action
-}
+// func evaluate_check_result_action(site Site, site_check_result string) string {
+// 		Caculates action to take.
+// 		Called by check_site()
+// 	action := "foo"
+// 	rlog.Debug(fmt.Sprintf("action, ```%v```", action))
+// 	return action
+// }
 
 func calc_next_check_time(site Site, site_check_result string) time.Time {
 	/*	Calculates next check time.
@@ -135,30 +134,39 @@ func calc_next_check_time(site Site, site_check_result string) time.Time {
 	return next_check_time
 }
 
-// func calc_next_check_time(site Site) time.Time {
-// 	/*	Calculates next check time.
-// 		Called by check_site()  */
-// 	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
-// 	t := time.Now()
-// 	rlog.Debug(fmt.Sprintf("now-time, ```%v```", t))
-// 	duration := time.Second * time.Duration(site.calculated_seconds)
-// 	rlog.Debug(fmt.Sprintf("duration, ```%v```", duration))
-// 	next_check_time := t.Add(duration)
-// 	rlog.Debug(fmt.Sprintf("next_check_time, ```%v```", next_check_time))
-// 	return next_check_time
-// }
-
-func run_email_check(site Site) bool {
+func run_email_check(site Site) {
 	/*	Determines whether email should be sent.
 		Called as go-routine by check_sites_with_goroutines()  */
 	rlog.Debug("checking whether to send email")
-	var bool_val bool = false
-	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
-	num := rand.Intn(2)              // so will be 0 or 1
-	rlog.Info(fmt.Sprintf("num, `%v`", num))
-	if num == 1 {
-		bool_val = true
+	send, type_send := assess_email_need(site)
+	// send_email(site, type_send)
+	if send == true {
+		send_email(site, type_send)
 	}
-	rlog.Info(fmt.Sprintf("bool_val, `%v`", bool_val))
-	return bool_val
+	rlog.Info("end of run_email_check()")
 }
+
+func assess_email_need(site Site) (bool, string) {
+	rlog.Debug("hereA")
+	return false, "send_no_email"
+}
+
+func send_email(site Site, type_send string) {
+	rlog.Debug("hereB")
+	return
+}
+
+// func run_email_check(site Site) bool {
+// 	/*	Determines whether email should be sent.
+// 		Called as go-routine by check_sites_with_goroutines()  */
+// 	rlog.Debug("checking whether to send email")
+// 	var bool_val bool = false
+// 	rand.Seed(time.Now().UnixNano()) // initialize global pseudo random generator
+// 	num := rand.Intn(2)              // so will be 0 or 1
+// 	rlog.Info(fmt.Sprintf("num, `%v`", num))
+// 	if num == 1 {
+// 		bool_val = true
+// 	}
+// 	rlog.Info(fmt.Sprintf("bool_val, `%v`", bool_val))
+// 	return bool_val
+// }

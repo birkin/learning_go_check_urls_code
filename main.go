@@ -37,7 +37,8 @@ type Site struct {
 var sites []Site // i think this declares a slice, not an array
 // var db *sql.DB
 var now_string string
-var send_email bool
+
+// var send_email bool
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
