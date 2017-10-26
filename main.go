@@ -16,8 +16,9 @@ TODO Next:
 - √ go-routine email call should be to run_email_check(), which should:
 	- see if email needs to be sent
 	- send it
-- refactor call to check email to call it from main.go
-- move run_email_check() into its own email.go module
+- √ refactor call to check email to call it from main.go -- no, can't do that because I no longer have access to the same site objects
+- √ move run_email_check() into its own email.go module
+- consider calling go-routines for email _after_ db is updated, rather than along the way.
 */
 
 type Site struct {
