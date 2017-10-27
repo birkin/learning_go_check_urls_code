@@ -18,6 +18,9 @@ TODO Next:
 	- send it
 - √ refactor call to check email to call it from main.go -- no, can't do that because I no longer have access to the same site objects
 - √ move run_email_check() into its own email.go module
+- √ code check-whether-to-send-email logic
+- code email prep
+- code email send
 - consider calling go-routines for email _after_ db is updated, rather than along the way.
 */
 
