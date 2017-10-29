@@ -8,7 +8,11 @@ import (
 	"log"
 	"net/smtp"
 	"strings"
+
+	"github.com/romana/rlog"
 )
+
+// settings := load_settings() // settings.go
 
 type Mail struct {
 	senderId string
@@ -39,7 +43,8 @@ func (mail *Mail) BuildMessage() string {
 	return message
 }
 
-func main_send() {
+// func main_send() {
+func main_send(site Site) {
 	mail := Mail{}
 	mail.senderId = "from_user@x.com"
 	mail.toIds = []string{"to_user_a@y.com", "to_user_b@z.com"}
@@ -50,7 +55,8 @@ func main_send() {
 
 	smtpServer := SmtpServer{host: "smtp.something.com", port: "the_port"}
 
-	log.Println(smtpServer.host)
+	// log.Println(smtpServer.host)
+	rlog.Debug(fmt.Sprintf("smtpServer.host, `%v`", smtpServer.host))
 	//build an auth
 	auth := smtp.PlainAuth("", mail.senderId, "password", smtpServer.host)
 
@@ -63,17 +69,23 @@ func main_send() {
 
 	conn, err := tls.Dial("tcp", smtpServer.ServerName(), tlsconfig)
 	if err != nil {
-		log.Panic(err)
+		// log.Panic(err)
+		rlog.Error(fmt.Sprintf("error on tls.Dial(), ```%v```", err))
+		panic(err)
 	}
 
 	client, err := smtp.NewClient(conn, smtpServer.host)
 	if err != nil {
-		log.Panic(err)
+		// log.Panic(err)
+		rlog.Error(fmt.Sprintf("error on smtp.NewClient(), ```%v```", err))
+		panic(err)
 	}
 
 	// step 1: Use Auth
 	if err = client.Auth(auth); err != nil {
-		log.Panic(err)
+		// log.Panic(err)
+		rlog.Error(fmt.Sprintf("error on client.Auth(), ```%v```", err))
+		panic(err)
 	}
 
 	// step 2: add all from and to
@@ -82,24 +94,32 @@ func main_send() {
 	}
 	for _, k := range mail.toIds {
 		if err = client.Rcpt(k); err != nil {
-			log.Panic(err)
+			// log.Panic(err)
+			rlog.Error(fmt.Sprintf("error iterating through mail.toIds, ```%v```", err))
+			panic(err)
 		}
 	}
 
 	// Data
 	w, err := client.Data()
 	if err != nil {
-		log.Panic(err)
+		// log.Panic(err)
+		rlog.Error(fmt.Sprintf("error accessing client.Data(), ```%v```", err))
+		panic(err)
 	}
 
 	_, err = w.Write([]byte(messageBody))
 	if err != nil {
-		log.Panic(err)
+		// log.Panic(err)
+		rlog.Error(fmt.Sprintf("error on w.Write(), ```%v```", err))
+		panic(err)
 	}
 
 	err = w.Close()
 	if err != nil {
-		log.Panic(err)
+		// log.Panic(err)
+		rlog.Error(fmt.Sprintf("error on w.Close(), ```%v```", err))
+		panic(err)
 	}
 
 	client.Quit()

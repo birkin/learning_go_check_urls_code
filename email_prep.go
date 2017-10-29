@@ -41,6 +41,7 @@ func assess_email_need(site Site) (bool, string) {
 		send = true
 		send_type = "send_success_email"
 	}
+	send = true // TEMP!!!
 	rlog.Debug(fmt.Sprintf("send, `%v`; send_type, `%v`", send, send_type))
 	return send, send_type
 }
@@ -48,6 +49,7 @@ func assess_email_need(site Site) (bool, string) {
 func send_email(site Site, type_send string) {
 	/*  Sends email if called.
 	    Called by run_email_check()  */
+	main_send(site) // email_send.go
 	rlog.Debug("`%v` email sent", type_send)
 	return
 }
