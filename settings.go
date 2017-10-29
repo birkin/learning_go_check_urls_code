@@ -13,6 +13,7 @@ type Settings struct {
 	DB_PORT           string `envconfig:"DB_PORT" required:"true"`
 	DB_NAME           string `envconfig:"DB_NAME" required:"true"`
 	TEST_EMAIL_STRING string `envconfig:"TEST_EMAIL_STRING" required:"true"`
+	MAIL_HOST         string `envconfig:"TEST_MAIL_HOST" required:"true"`
 }
 
 func load_settings() Settings {

@@ -12,7 +12,7 @@ import (
 	"github.com/romana/rlog"
 )
 
-// settings := load_settings() // settings.go
+var settings Settings = load_settings() // settings.go
 
 type Mail struct {
 	senderId string
@@ -53,7 +53,8 @@ func main_send(site Site) {
 
 	messageBody := mail.BuildMessage()
 
-	smtpServer := SmtpServer{host: "smtp.something.com", port: "the_port"}
+	// smtpServer := SmtpServer{host: "smtp.something.com", port: "the_port"}
+	smtpServer := SmtpServer{host: settings.MAIL_HOST, port: "the_port"}
 
 	// log.Println(smtpServer.host)
 	rlog.Debug(fmt.Sprintf("smtpServer.host, `%v`", smtpServer.host))
