@@ -12,6 +12,7 @@ type Settings struct {
 	DB_HOST           string `envconfig:"DB_HOST" required:"true"`
 	DB_PORT           string `envconfig:"DB_PORT" required:"true"`
 	DB_NAME           string `envconfig:"DB_NAME" required:"true"`
+	DB_TABLE          string `envconfig:"DB_TABLE" required:"true"`
 	TEST_EMAIL_STRING string `envconfig:"TEST_EMAIL_STRING" required:"true"`
 	MAIL_HOST         string `envconfig:"TEST_MAIL_HOST" required:"true"`
 }

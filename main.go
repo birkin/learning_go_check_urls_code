@@ -55,9 +55,6 @@ func main() {
 	settings := load_settings() // settings.go
 	rlog.Debug(fmt.Sprintf("settings, ```%#v```", settings))
 
-	/// access db
-	// db = setup_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // db.go
-
 	/// prepare current-time
 	t := time.Now()
 	now_string = fmt.Sprintf("%v", t.Format("2006-01-02 15:04:05"))
@@ -65,7 +62,7 @@ func main() {
 
 	/// initialize sites
 	// sites := initialize_sites_from_db(db) // db.go
-	sites := initialize_sites_from_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME) // db.go
+	sites := initialize_sites_from_db(settings.DB_USERNAME, settings.DB_PASSWORD, settings.DB_HOST, settings.DB_PORT, settings.DB_NAME, settings.DB_TABLE) // db.go
 	rlog.Debug("sites from db initialized")
 	defer db.Close()
 
