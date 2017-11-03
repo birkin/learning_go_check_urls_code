@@ -9,6 +9,7 @@ import (
 func run_email_check(site Site) {
 	/*	Determines whether email should be sent.
 		Called as go-routine by check_sites_with_goroutines()  */
+	rlog.Debug("starting run_email_check()")
 	send, type_send := assess_email_need(site)
 	if send == true {
 		send_email(site, type_send)
@@ -25,6 +26,7 @@ func assess_email_need(site Site) (bool, string) {
 			- site.recent_checked_result == "passed" && site.previous_checked_result != "passed" && site.pre_previous_checked_result == "passed"  // recovery from temporary temporary failure
 			- site.recent_checked_result != "passed" && site.previous_checked_result != "passed" && site.pre_previous_checked_result != "passed"  // repeated failure
 			- site.previous_checked_result == "" // new entry  */
+	rlog.Debug("starting assess_email_need()")
 	send := false
 	send_type := "send_no_email"
 	/// failure email

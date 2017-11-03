@@ -75,6 +75,8 @@ func main() {
 	/// call worker function
 	check_sites_with_goroutines(sites) // check.go
 
+	rlog.Debug("end of main()")
+
 } // end func main()
 
 /// EOF

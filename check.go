@@ -45,7 +45,7 @@ func check_sites_with_goroutines(sites []Site) {
 		save_check_result(channel_site_data) // db.go
 
 		/// go routine for checking whether email should be sent, and sending it if necessary
-		go run_email_check(channel_site_data) // email_prep.go
+		run_email_check(channel_site_data) // email_prep.go
 		rlog.Info("just called run_email_check()")
 		if counter == len(sites) {
 			close(dbwriter_channel)
