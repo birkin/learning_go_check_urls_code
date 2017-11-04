@@ -39,11 +39,10 @@ func assess_email_need(site Site) (bool, string) {
 	/// success email
 	if site.recent_checked_result == "passed" &&
 		site.previous_checked_result != "passed" &&
-		site.pre_previous_checked_result == "passed" {
+		site.pre_previous_checked_result != "passed" {
 		send = true
 		send_type = "send_success_email"
 	}
-	send = true // TEMP!!!
 	rlog.Debug(fmt.Sprintf("send, `%v`; send_type, `%v`", send, send_type))
 	return send, send_type
 }
