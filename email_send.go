@@ -65,7 +65,7 @@ func main_send(site Site) {
 	// TLS config
 	tlsconfig := &tls.Config{
 		InsecureSkipVerify: true,
-		ServerName:         smtpServer.host,
+		ServerName: smtpServer.host,
 	}
 
 	conn, err := tls.Dial("tcp", smtpServer.ServerName(), tlsconfig)
