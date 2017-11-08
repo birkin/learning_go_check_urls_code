@@ -15,6 +15,8 @@ type Settings struct {
 	DB_TABLE          string `envconfig:"DB_TABLE" required:"true"`
 	TEST_EMAIL_STRING string `envconfig:"TEST_EMAIL_STRING" required:"true"`
 	MAIL_HOST         string `envconfig:"TEST_MAIL_HOST" required:"true"`
+	MAIL_PORT         string `envconfig:"TEST_MAIL_PORT" required:"true"`
+	MAIL_SENDER       string `envconfig:"TEST_MAIL_SENDER" required:"true"`
 }
 
 func load_settings() Settings {
