@@ -53,7 +53,7 @@ func assess_email_need(site Site) (bool, string) {
 func send_email(site Site, type_send string) {
 	/*  Sends email if called.
 	    Called by run_email_check()  */
-	main_send_b(site)
+	main_send(site)
 	rlog.Debug(fmt.Sprintf("`%v` email sent", type_send))
 	return
 }

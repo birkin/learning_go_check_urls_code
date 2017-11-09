@@ -7,16 +7,17 @@ import (
 )
 
 type Settings struct {
-	DB_USERNAME       string `envconfig:"DB_USERNAME" required:"true"`
-	DB_PASSWORD       string `envconfig:"DB_PASSWORD" required:"true"`
-	DB_HOST           string `envconfig:"DB_HOST" required:"true"`
-	DB_PORT           string `envconfig:"DB_PORT" required:"true"`
-	DB_NAME           string `envconfig:"DB_NAME" required:"true"`
-	DB_TABLE          string `envconfig:"DB_TABLE" required:"true"`
-	TEST_EMAIL_STRING string `envconfig:"TEST_EMAIL_STRING" required:"true"`
-	MAIL_HOST         string `envconfig:"TEST_MAIL_HOST" required:"true"`
-	MAIL_PORT         string `envconfig:"TEST_MAIL_PORT" required:"true"`
-	MAIL_SENDER       string `envconfig:"TEST_MAIL_SENDER" required:"true"`
+	DB_USERNAME         string `envconfig:"DB_USERNAME" required:"true"`
+	DB_PASSWORD         string `envconfig:"DB_PASSWORD" required:"true"`
+	DB_HOST             string `envconfig:"DB_HOST" required:"true"`
+	DB_PORT             string `envconfig:"DB_PORT" required:"true"`
+	DB_NAME             string `envconfig:"DB_NAME" required:"true"`
+	DB_TABLE            string `envconfig:"DB_TABLE" required:"true"`
+	TEST_EMAIL_STRING   string `envconfig:"TEST_EMAIL_STRING" required:"true"`
+	MAIL_HOST           string `envconfig:"TEST_MAIL_HOST" required:"true"`
+	MAIL_PORT           string `envconfig:"TEST_MAIL_PORT" required:"true"`
+	MAIL_SENDER         string `envconfig:"TEST_MAIL_SENDER" required:"true"`
+	TEST_MAIL_RECIPIENT string `envconfig:"TEST_MAIL_RECIPIENT" required:"true"`
 }
 
 func load_settings() Settings {
