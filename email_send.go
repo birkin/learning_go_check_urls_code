@@ -34,14 +34,13 @@ func main_send(site Site) {
 
 	/// no password needed, but smtp.SendMail requires the auth module
 	password_string := ""
-	auth := smtp.PlainAuth("", sender_string, password_string, host_string)
+	auth := smtp.PlainAuth("", actual_sender_string, password_string, host_string)
 
 	to := []string{recipient_string}
 
 	msg := []byte(
-		fmt.Sprintf(
-			"To: %v\r\n", recipient_string) +
-			"From: automated-site-checker\r\n" +
+		fmt.Sprintf("To: %v\r\n", recipient_string) +
+			fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
 			"Subject: discount Gophers!\r\n" +
 			"\r\n" +
 			"This is the email body test.\r\n",
@@ -49,7 +48,7 @@ func main_send(site Site) {
 
 	rlog.Debug(fmt.Sprintf("msg, ```%v```", msg))
 
-	err := smtp.SendMail(host_port_string, auth, sender_string, to, msg)
+	err := smtp.SendMail(host_port_string, auth, actual_sender_string, to, msg)
 	if err != nil {
 		log.Fatal(err)
 	}
