@@ -39,13 +39,23 @@ func main_send(site Site) {
 	/// and send the email all in one step.
 
 	to := []string{recipient_string}
-	// msg := []byte("To: recipient@example.net\r\n" +
+
+	// msg := []byte(
+	// 	fmt.Sprintf("To: %v\r\n", recipient_string) +
+	// 		fmt.Sprintf("From: %v\r\n", sender_string) +
+	// 		"Subject: discount Gophers!\r\n" +
+	// 		"\r\n" +
+	// 		"This is the email body test.\r\n")
+
 	msg := []byte(
-		fmt.Sprintf("To: %v\r\n", recipient_string) +
-			fmt.Sprintf("From: %v\r\n", sender_string) +
+		fmt.Sprintf(
+			"To: %v\r\n", recipient_string) +
+			"From: automated-site-checker\r\n" +
 			"Subject: discount Gophers!\r\n" +
 			"\r\n" +
-			"This is the email body test.\r\n")
+			"This is the email body test.\r\n",
+	)
+
 	rlog.Debug(fmt.Sprintf("msg, ```%v```", msg))
 
 	err := smtp.SendMail(host_port_string, auth, sender_string, to, msg)
