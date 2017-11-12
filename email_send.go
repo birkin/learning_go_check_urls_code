@@ -1,16 +1,12 @@
 package main
 
-/* all credit: <https://hackernoon.com/golang-sendmail-sending-mail-through-net-smtp-package-5cadbe2670e0> */
-
 import (
-	// "bytes"
-	// "crypto/tls"
 	"fmt"
+	"github.com/romana/rlog"
 	"log"
 	"net/smtp"
-	// "strings"
-
-	"github.com/romana/rlog"
+	"reflect"
+	"strings"
 )
 
 var settings Settings = load_settings() // settings.go
@@ -19,6 +15,19 @@ func main_send(site Site) {
 
 	recipient_string := settings.TEST_MAIL_RECIPIENT
 	rlog.Debug(fmt.Sprintf("recipient_string, ```%v```", recipient_string))
+
+	////////////////
+
+	/// split testing
+	somevar := strings.Split(recipient_string, ",")
+	lg_msgA := fmt.Sprintf("`somevar` has TypeOf, ```%v```", reflect.TypeOf(somevar))
+	rlog.Debug(lg_msgA)
+	somevar_kind := reflect.ValueOf(somevar)
+	lg_msgA = fmt.Sprintf("`somevar_kind` has Kind, ```%v```", somevar_kind.Kind())
+	rlog.Debug(lg_msgA)
+	rlog.Debug(fmt.Sprintf("somevar, ```%v```", somevar))
+
+	/////////////////////
 
 	host_string := fmt.Sprintf("%v", settings.MAIL_HOST)
 	rlog.Debug(fmt.Sprintf("host_string, ```%v```", host_string))
@@ -37,6 +46,11 @@ func main_send(site Site) {
 	auth := smtp.PlainAuth("", actual_sender_string, password_string, host_string)
 
 	to := []string{recipient_string}
+	lg_msg := fmt.Sprintf("`to` has TypeOf, ```%v```", reflect.TypeOf(to))
+	rlog.Debug(lg_msg)
+	to_kind := reflect.ValueOf(to)
+	lg_msg = fmt.Sprintf("`to` has Kind, ```%v```", to_kind.Kind())
+	rlog.Debug(lg_msg)
 
 	msg := []byte(
 		fmt.Sprintf("To: %v\r\n", recipient_string) +
