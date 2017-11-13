@@ -5,7 +5,7 @@ import (
 	"github.com/romana/rlog"
 	"log"
 	"net/smtp"
-	"reflect"
+	// "reflect"
 	"strings"
 )
 
@@ -13,21 +13,29 @@ var settings Settings = load_settings() // settings.go
 
 func main_send(site Site) {
 
-	recipient_string := settings.TEST_MAIL_RECIPIENT
-	rlog.Debug(fmt.Sprintf("recipient_string, ```%v```", recipient_string))
+	// recipient_string := settings.TEST_MAIL_RECIPIENT
+	// rlog.Debug(fmt.Sprintf("recipient_string, ```%v```", recipient_string))
 
-	////////////////
+	////////////////////
 
-	/// split testing
-	somevar := strings.Split(recipient_string, ",")
-	lg_msgA := fmt.Sprintf("`somevar` has TypeOf, ```%v```", reflect.TypeOf(somevar))
-	rlog.Debug(lg_msgA)
-	somevar_kind := reflect.ValueOf(somevar)
-	lg_msgA = fmt.Sprintf("`somevar_kind` has Kind, ```%v```", somevar_kind.Kind())
-	rlog.Debug(lg_msgA)
-	rlog.Debug(fmt.Sprintf("somevar, ```%v```", somevar))
+	// /// split testing
+	// somevar := strings.Split(recipient_string, ",")
+	// lg_msgA := fmt.Sprintf("`somevar` has TypeOf, ```%v```", reflect.TypeOf(somevar))
+	// rlog.Debug(lg_msgA)
+	// somevar_kind := reflect.ValueOf(somevar)
+	// lg_msgA = fmt.Sprintf("`somevar_kind` has Kind, ```%v```", somevar_kind.Kind())
+	// rlog.Debug(lg_msgA)
+	// rlog.Debug(fmt.Sprintf("somevar, ```%v```", somevar))
 
-	/////////////////////
+	////////////////////
+
+	var recipent_entry string = settings.TEST_MAIL_RECIPIENT
+	rlog.Debug(fmt.Sprintf("recipent_entry, ```%v```", recipent_entry))
+
+	var recipients []string = strings.Split(recipent_entry, ",")
+	rlog.Debug(fmt.Sprintf("recipients, ```%v```", recipients))
+
+	////////////////////
 
 	host_string := fmt.Sprintf("%v", settings.MAIL_HOST)
 	rlog.Debug(fmt.Sprintf("host_string, ```%v```", host_string))
@@ -45,15 +53,23 @@ func main_send(site Site) {
 	password_string := ""
 	auth := smtp.PlainAuth("", actual_sender_string, password_string, host_string)
 
-	to := []string{recipient_string}
-	lg_msg := fmt.Sprintf("`to` has TypeOf, ```%v```", reflect.TypeOf(to))
-	rlog.Debug(lg_msg)
-	to_kind := reflect.ValueOf(to)
-	lg_msg = fmt.Sprintf("`to` has Kind, ```%v```", to_kind.Kind())
-	rlog.Debug(lg_msg)
+	// to := []string{recipient_string}
+	// lg_msg := fmt.Sprintf("`to` has TypeOf, ```%v```", reflect.TypeOf(to))
+	// rlog.Debug(lg_msg)
+	// to_kind := reflect.ValueOf(to)
+	// lg_msg = fmt.Sprintf("`to` has Kind, ```%v```", to_kind.Kind())
+	// rlog.Debug(lg_msg)
+
+	// msg := []byte(
+	// 	fmt.Sprintf("To: %v\r\n", recipient_string) +
+	// 		fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
+	// 		"Subject: discount Gophers!\r\n" +
+	// 		"\r\n" +
+	// 		"This is the email body test.\r\n",
+	// )
 
 	msg := []byte(
-		fmt.Sprintf("To: %v\r\n", recipient_string) +
+		fmt.Sprintf("To: %v\r\n", recipients) +
 			fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
 			"Subject: discount Gophers!\r\n" +
 			"\r\n" +
@@ -62,7 +78,8 @@ func main_send(site Site) {
 
 	rlog.Debug(fmt.Sprintf("msg, ```%v```", msg))
 
-	err := smtp.SendMail(host_port_string, auth, actual_sender_string, to, msg)
+	// err := smtp.SendMail(host_port_string, auth, actual_sender_string, to, msg)
+	err := smtp.SendMail(host_port_string, auth, actual_sender_string, recipients, msg)
 	if err != nil {
 		log.Fatal(err)
 	}
