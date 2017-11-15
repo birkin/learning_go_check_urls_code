@@ -10,7 +10,11 @@ import (
 
 var settings Settings = load_settings() // settings.go
 
-func main_send(site Site) {
+func send_success_email(site Site) {
+	rlog.Debug("success email will be sent here")
+}
+
+func send_failure_email(site Site) {
 
 	// var recipent_entry string = settings.TEST_MAIL_RECIPIENT
 	// rlog.Debug(fmt.Sprintf("recipent_entry, ```%v```", recipent_entry))
@@ -40,7 +44,7 @@ func main_send(site Site) {
 	// msg := []byte(
 	// 	fmt.Sprintf("To: %v\r\n", recipients) +
 	// 		fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
-	// 		"Subject: discount Gophers!\r\n" +
+	// 		fmt.Sprintf("Subject: %v\r\n", site.name) +
 	// 		"\r\n" +
 	// 		"This is the email body test.\r\n",
 	// )
@@ -48,9 +52,12 @@ func main_send(site Site) {
 	msg := []byte(
 		fmt.Sprintf("To: %v\r\n", recipients) +
 			fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
-			fmt.Sprintf("Subject: %v\r\n", site.name) +
+			// fmt.Sprintf("Subject: %v\r\n", site.name) +
+			fmt.Sprintf("Subject: Service-Status alert: \"%v\" problem\r\n", site.name) +
 			"\r\n" +
-			"This is the email body test.\r\n",
+			// "This is the email body test.\r\n",
+			site.email_message +
+			"\r\n",
 	)
 
 	rlog.Debug(fmt.Sprintf("msg, ```%v```", msg))
@@ -60,4 +67,4 @@ func main_send(site Site) {
 		log.Fatal(err)
 	}
 
-}
+} // end func send_failure_email()
