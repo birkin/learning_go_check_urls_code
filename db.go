@@ -22,7 +22,7 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 	sites = []Site{}
 
 	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `%v`", DB_TABLE)
-	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time`, `check_frequency_number` FROM `%v`", DB_TABLE)
+	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time`, `check_frequency_number`, `check_frequency_unit` FROM `%v`", DB_TABLE)
 
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
 	rows, err := db.Query(querystring)
@@ -44,7 +44,8 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 		var calculated_seconds int
 		var next_check_time time.Time
 		var check_frequency_number int
-		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &recent_checked_result, &previous_checked_result, &pre_previous_checked_result, &calculated_seconds, &next_check_time, &check_frequency_number)
+		var check_frequency_unit string
+		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &recent_checked_result, &previous_checked_result, &pre_previous_checked_result, &calculated_seconds, &next_check_time, &check_frequency_number, &check_frequency_unit)
 		if err != nil {
 			msg := fmt.Sprintf("error scanning db rows, ```%v```", err)
 			rlog.Error(msg)
@@ -52,7 +53,7 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), recent_checked_result, previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, check_frequency_number, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, check_frequency_number, custom_time_taken
+			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), recent_checked_result, previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, check_frequency_number, check_frequency_unit, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, check_frequency_number, custom_time_taken
 		)
 
 	}

@@ -77,7 +77,7 @@ func make_failure_body(site Site) {
 	body += "\r\n"
 	body += fmt.Sprintf(
 		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v(s).",
-		site.name, site.check_frequency_number, site.check_frequency_number)
+		site.name, site.check_frequency_number, site.check_frequency_unit)
 	rlog.Debug(fmt.Sprintf("body, ```%v```", body))
 
 }
