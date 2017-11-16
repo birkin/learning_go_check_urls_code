@@ -66,5 +66,42 @@ func send_failure_email(site Site) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	make_failure_body(site)
 
 } // end func send_failure_email()
+
+func make_failure_body(site Site) {
+
+	var body string = ""
+	body += fmt.Sprintf("The service: %v appears to be down.", site.name)
+	body += "\r\n"
+	body += fmt.Sprintf(
+		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v(s).",
+		site.name, site.check_frequency_number, site.check_frequency_number)
+	rlog.Debug(fmt.Sprintf("body, ```%v```", body))
+
+}
+
+//     message = '''The service "%s" appears to be down.
+
+// The "%s" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%s-%s(s).
+
+// - Url checked: "%s"
+// - Text expected: "%s"
+// - Specified failure message: "%s"
+
+// You can view the current status of all services set up for automated checking at:
+// <http://library.brown.edu/services/site_checker/status/>
+
+// If authorized, you can edit service automated checking at:
+// <%s>
+
+// [end]
+// ''' % ( site.name,
+//         site.name,
+//         site.check_frequency_number,
+//         site.check_frequency_unit,
+//         site.url,
+//         site.text_expected,
+//         site.email_message,
+//         settings_app.EMAIL_ADMIN_URL )
