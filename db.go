@@ -15,12 +15,15 @@ var db *sql.DB
 func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST string, DB_PORT string, DB_NAME string, DB_TABLE string) []Site {
 	/* Loads sites from db data
 	   (https://stackoverflow.com/questions/26159416/init-array-of-structs-in-go)
-	   Called by main() */
+	   Called by main()
+	   TODO: once testing is complete, add the clause to the querystring: ```WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", DB_TABLE, now_string)``` */
 	db = setup_db(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
 	defer db.Close()
 	sites = []Site{}
-	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `%v`", DB_TABLE)
-	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `%v` WHERE `next_check_time` <= '%v' ORDER BY `next_check_time` ASC", DB_TABLE, now_string)
+
+	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `%v`", DB_TABLE)
+	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time`, `check_frequency_number` FROM `%v`", DB_TABLE)
+
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))
 	rows, err := db.Query(querystring)
 	if err != nil {
@@ -40,7 +43,8 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 		var pre_previous_checked_result string
 		var calculated_seconds int
 		var next_check_time time.Time
-		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &recent_checked_result, &previous_checked_result, &pre_previous_checked_result, &calculated_seconds, &next_check_time)
+		var check_frequency_number int
+		err = rows.Scan(&id, &name, &url, &text_expected, &email_addresses, &email_message, &recent_checked_result, &previous_checked_result, &pre_previous_checked_result, &calculated_seconds, &next_check_time, &check_frequency_number)
 		if err != nil {
 			msg := fmt.Sprintf("error scanning db rows, ```%v```", err)
 			rlog.Error(msg)
@@ -48,7 +52,7 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 		}
 		sites = append(
 			sites,
-			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), recent_checked_result, previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, custom_time_taken
+			Site{id, name, url, text_expected, email_addresses, email_message, time.Now(), recent_checked_result, previous_checked_result, pre_previous_checked_result, calculated_seconds, next_check_time, check_frequency_number, 0}, // name, url-to-check, text_expected, email_addresses, email_message, recent_checked_time, recent_checked_result, previous_checked_result, pre_previous_checked_result, next_check_time, check_frequency_number, custom_time_taken
 		)
 
 	}
