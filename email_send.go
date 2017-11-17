@@ -61,7 +61,7 @@ func send_failure_email(site Site) {
 			"\r\n",
 	)
 
-	rlog.Debug(fmt.Sprintf("msg, ```%v```", msg))
+	// rlog.Debug(fmt.Sprintf("msg, ```%v```", msg))
 
 	err := smtp.SendMail(host_port_string, auth, actual_sender_string, recipients, msg)
 	if err != nil {
@@ -72,13 +72,18 @@ func send_failure_email(site Site) {
 } // end func send_failure_email()
 
 func make_failure_body(site Site) string {
+	var frequency_unit string = site.check_frequency_unit
+	if site.check_frequency_number > 1 {
+		frequency_unit = frequency_unit + "s"
+	}
 	var body string = ""
-	body += fmt.Sprintf("The service: %v appears to be down.", site.name)
+	body += fmt.Sprintf("The service: \"%v\"" appears to be down.", site.name)
 	body += "\r\n"
 	body += "\r\n"
 	body += fmt.Sprintf(
-		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v(s).",
-		site.name, site.check_frequency_number, site.check_frequency_unit)
+		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v.",
+		site.name, site.check_frequency_number, frequency_unit)
+
 	rlog.Debug(fmt.Sprintf("body, ```%v```", body))
 	return body
 }
