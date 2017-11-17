@@ -49,6 +49,7 @@ func send_failure_email(site Site) {
 	// 		"This is the email body test.\r\n",
 	// )
 
+	var body string = make_failure_body(site)
 	msg := []byte(
 		fmt.Sprintf("To: %v\r\n", recipients) +
 			fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
@@ -56,7 +57,7 @@ func send_failure_email(site Site) {
 			fmt.Sprintf("Subject: Service-Status alert: \"%v\" problem\r\n", site.name) +
 			"\r\n" +
 			// "This is the email body test.\r\n",
-			site.email_message +
+			body +
 			"\r\n",
 	)
 
@@ -70,16 +71,16 @@ func send_failure_email(site Site) {
 
 } // end func send_failure_email()
 
-func make_failure_body(site Site) {
-
+func make_failure_body(site Site) string {
 	var body string = ""
 	body += fmt.Sprintf("The service: %v appears to be down.", site.name)
+	body += "\r\n"
 	body += "\r\n"
 	body += fmt.Sprintf(
 		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v(s).",
 		site.name, site.check_frequency_number, site.check_frequency_unit)
 	rlog.Debug(fmt.Sprintf("body, ```%v```", body))
-
+	return body
 }
 
 //     message = '''The service "%s" appears to be down.
