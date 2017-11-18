@@ -77,19 +77,18 @@ func make_failure_body(site Site) string {
 		frequency_unit = frequency_unit + "s"
 	}
 	var body string = ""
-	body += fmt.Sprintf("The service: \"%v\" appears to be down.", site.name)
-	body += "\r\n"
+	body += fmt.Sprintf("The service: \"%v\" appears to be down.\r\n", site.name)
 	body += "\r\n"
 	body += fmt.Sprintf(
-		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v.",
+		"The \"%v\" service failed two consecutive automated checks a few minutes apart. Checks will continue every few minutes while the failures persist, but you will only be emailed again when the automated check succeeds. Once the automated check succeeds, the check-frequency will return to the specified values of every-%v-%v.\r\n",
 		site.name, site.check_frequency_number, frequency_unit)
 	body += "\r\n"
-	body += "\r\n"
 	body += fmt.Sprintf(
-		"- Url checked: \"%v\"",
+		"- Url checked: \"%v\"\r\n",
 		site.url)
-
-	body += "\r\n"
+	body += fmt.Sprintf(
+		"- Text expected: \"%v\"\r\n",
+		site.text_expected)
 	body += "\r\n"
 	body += "You can view the current status of all services set up for automated checking at:\r\n"
 	body += "<http://library.brown.edu/services/site_checker/status/>\r\n"
