@@ -7,23 +7,6 @@ import (
 	"github.com/romana/rlog"
 )
 
-/*
-TODO Next:
-- √ temporarily put email-addresses string into a setting and use it.
-- √ log sql update querystring
-- √ save to db
-- √ refactor initial db call
-- √ go-routine email call should be to run_email_check(), which should:
-	- see if email needs to be sent
-	- send it
-- √ refactor call to check email to call it from main.go -- no, can't do that because I no longer have access to the same site objects
-- √ move run_email_check() into its own email.go module
-- √ code check-whether-to-send-email logic
-- code email prep
-- code email send
-- consider calling go-routines for email _after_ db is updated, rather than along the way.
-*/
-
 type Site struct {
 	id                          int
 	name                        string
@@ -43,24 +26,19 @@ type Site struct {
 }
 
 var sites []Site // i think this declares a slice, not an array
-// var db *sql.DB
-var now_string string
-
-// var send_email bool
 
 func main() {
 	/* Loads settings, initializes sites array, calls worker function. */
 
+	/// start-tracking
 	rlog.Info("\n\nstarting")
+	strt_tm := time.Now()
+	strt_str := fmt.Sprintf("%v", strt_tm.Format("2006-01-02 15:04:05"))
+	rlog.Debug(fmt.Sprintf("main() start time, ```%v```", strt_str))
 
 	/// initialize settings
 	settings := load_settings() // settings.go
 	rlog.Debug(fmt.Sprintf("settings, ```%#v```", settings))
-
-	/// prepare current-time
-	t := time.Now()
-	now_string = fmt.Sprintf("%v", t.Format("2006-01-02 15:04:05"))
-	rlog.Debug(fmt.Sprintf("now_string, ```%v```", now_string))
 
 	/// initialize sites
 	// sites := initialize_sites_from_db(db) // db.go
@@ -77,6 +55,9 @@ func main() {
 	/// call worker function
 	check_sites_with_goroutines(sites) // check.go
 
+	/// end-tracking
+	main_elapsed := time.Since(strt_tm)
+	rlog.Info(fmt.Sprintf("main() elapsed time, ```%v```", main_elapsed))
 	rlog.Debug("end of main()")
 
 } // end func main()
