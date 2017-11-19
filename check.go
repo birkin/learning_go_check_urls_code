@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	// "math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -24,14 +23,12 @@ func check_sites_with_goroutines(sites []Site) {
 	   Called by main() */
 
 	rlog.Debug(fmt.Sprintf("starting check_sites"))
-	main_start := time.Now()
 
 	/// initialize channel
 	dbwriter_channel := make(chan Site)
 
 	/// start go routines
 	for _, site_element := range sites {
-		// rlog.Debug(fmt.Sprintf("here"))
 		go check_site(site_element, dbwriter_channel)
 	}
 
@@ -53,8 +50,7 @@ func check_sites_with_goroutines(sites []Site) {
 			break // shouldn't be needed
 		}
 	}
-	main_elapsed := time.Since(main_start)
-	rlog.Info(fmt.Sprintf("main_elapsed, ```%v```", main_elapsed))
+	rlog.Info("check_sites_with_goroutines() complete")
 
 } // end func check_sites_with_goroutines()
 
@@ -104,17 +100,12 @@ func check_site(site Site, dbwriter_channel chan Site) {
 
 } // end func check_site()
 
-// func evaluate_check_result_action(site Site, site_check_result string) string {
-// 		Caculates action to take.
-// 		Called by check_site()
-// 	action := "foo"
-// 	rlog.Debug(fmt.Sprintf("action, ```%v```", action))
-// 	return action
-// }
-
 func calc_next_check_time(site Site, site_check_result string) time.Time {
 	/*	Calculates next check time.
+		If the check passes, the next-check-time will be after the user-specified interval,
+			but if the check fails, it will be after the default re-check interval.
 		Called by check_site()  */
+	var DEFAULT_MINUTES int = 5 // eventually make this a setting
 	original_next_check_time := site.next_check_time
 	rlog.Debug(fmt.Sprintf("original_next_check_time, ```%v```", original_next_check_time))
 	rlog.Debug(fmt.Sprintf("original site.calculated_seconds, ```%v```", site.calculated_seconds))
@@ -125,7 +116,8 @@ func calc_next_check_time(site Site, site_check_result string) time.Time {
 		duration = time.Second * time.Duration(site.calculated_seconds)
 		rlog.Debug(fmt.Sprintf("passed duration, ```%v```", duration))
 	} else {
-		duration = time.Minute * time.Duration(5) // eventually move this to a recheck_interval setting
+		// duration = time.Minute * time.Duration(5) // eventually move this to a recheck_interval setting
+		duration = time.Minute * time.Duration(DEFAULT_MINUTES)
 		rlog.Debug(fmt.Sprintf("NOT-passed duration, ```%v```", duration))
 	}
 	next_check_time := t.Add(duration)
