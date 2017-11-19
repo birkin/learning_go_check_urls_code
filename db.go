@@ -3,11 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"math/rand"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql" // package is imported only for its `side-effects`; it gets registered as the driver for the regular database/sql package
 	"github.com/romana/rlog"
-	"math/rand"
-	// "reflect"
-	"time"
 )
 
 var db *sql.DB

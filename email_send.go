@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/romana/rlog"
 	"log"
 	"net/smtp"
 	"strings"
+
+	"github.com/romana/rlog"
 )
 
 var settings Settings = load_settings() // settings.go
