@@ -21,7 +21,6 @@ func initialize_sites_from_db(DB_USERNAME string, DB_PASSWORD string, DB_HOST st
 	defer db.Close()
 	sites = []Site{}
 
-	// querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time` FROM `%v`", DB_TABLE)
 	querystring := fmt.Sprintf("SELECT `id`, `name`, `url`, `text_expected`, `email_addresses`, `email_message`, `recent_checked_result`, `previous_checked_result`, `pre_previous_checked_result`, `calculated_seconds`, `next_check_time`, `check_frequency_number`, `check_frequency_unit` FROM `%v`", DB_TABLE)
 
 	rlog.Debug(fmt.Sprintf("querystring, ```%v```", querystring))

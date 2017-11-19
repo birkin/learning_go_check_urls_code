@@ -27,8 +27,8 @@ func assess_email_need(site Site) (bool, string) {
 			- site.recent_checked_result != "passed" && site.previous_checked_result != "passed" && site.pre_previous_checked_result != "passed"  // repeated failure
 			- site.previous_checked_result == "" // new entry  */
 	rlog.Debug("starting assess_email_need()")
-	send := false
-	send_type := "send_no_email"
+	var send bool = false
+	var send_type string = "send_no_email"
 	/// failure email
 	if site.recent_checked_result != "passed" &&
 		site.previous_checked_result != "passed" &&
