@@ -27,8 +27,8 @@ func send_failure_email(site Site) {
 	auth := smtp.PlainAuth("", settings.MAIL_SENDER, password_string, host_string) // settings.MAIL_SENDER used for smtp.PlainAuth() and smtp.SendMail() commands
 	/// sender stuff
 	rlog.Debug(fmt.Sprintf("actual-sender from settings, ```%v```", settings.MAIL_SENDER))
-	perceived_sender_string := "Brown Library automated site-checker"
-	rlog.Debug(fmt.Sprintf("perceived_sender_string, ```%v```", perceived_sender_string))
+	display_sender_string := "Brown Library automated site-checker"
+	rlog.Debug(fmt.Sprintf("display_sender_string, ```%v```", display_sender_string))
 	/// recipent stuff
 	var recipent_entry string = site.email_addresses
 	rlog.Debug(fmt.Sprintf("recipent_entry, ```%v```", recipent_entry))
@@ -39,7 +39,7 @@ func send_failure_email(site Site) {
 	/// assemble pieces
 	msg := []byte(
 		fmt.Sprintf("To: %v\r\n", recipients) +
-			fmt.Sprintf("From: %v\r\n", perceived_sender_string) +
+			fmt.Sprintf("From: %v\r\n", display_sender_string) +
 			fmt.Sprintf("Subject: Service-Status alert: \"%v\" problem\r\n", site.name) +
 			"\r\n" +
 			body +
