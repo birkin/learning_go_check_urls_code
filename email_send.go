@@ -30,15 +30,22 @@ func send_failure_email(site Site) {
 	display_sender_string := "Brown Library automated site-checker"
 	rlog.Debug(fmt.Sprintf("display_sender_string, ```%v```", display_sender_string))
 	/// recipent stuff
-	var recipent_entry string = site.email_addresses
-	rlog.Debug(fmt.Sprintf("recipent_entry, ```%v```", recipent_entry))
-	var recipients []string = strings.Split(recipent_entry, ",")
-	rlog.Debug(fmt.Sprintf("recipients, ```%v```", recipients))
+	var db_recipients_string string = site.email_addresses
+	rlog.Debug(fmt.Sprintf("db_recipients_string, ```%v```", db_recipients_string))
+	var actual_recipients []string = strings.Split(db_recipients_string, ",")
+	rlog.Debug(fmt.Sprintf("actual_recipients, ```%v```", actual_recipients))
+	/// make display-recipients here
+	var display_recipients_string string = ""
+	for _, address := range actual_recipients {
+		rlog.Debug(fmt.Sprintf("address, ```%v```", address))
+	}
+	rlog.Debug(fmt.Sprintf("display_recipients_string, ```%v```", display_recipients_string))
+	/// end of make-display-recipients
 	/// body stuff
 	var body string = make_failure_body(site)
 	/// assemble pieces
 	msg := []byte(
-		fmt.Sprintf("To: %v\r\n", recipients) +
+		fmt.Sprintf("To: %v\r\n", db_recipients_string) +
 			fmt.Sprintf("From: %v\r\n", display_sender_string) +
 			fmt.Sprintf("Subject: Service-Status alert: \"%v\" problem\r\n", site.name) +
 			"\r\n" +
@@ -46,7 +53,7 @@ func send_failure_email(site Site) {
 			"\r\n",
 	)
 	/// send
-	err := smtp.SendMail(host_port_string, auth, settings.MAIL_SENDER, recipients, msg)
+	err := smtp.SendMail(host_port_string, auth, settings.MAIL_SENDER, actual_recipients, msg)
 	if err != nil {
 		log.Fatal(err)
 	}
