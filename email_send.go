@@ -32,20 +32,24 @@ func send_failure_email(site Site) {
 	/// recipent stuff
 	var db_recipients_string string = site.email_addresses
 	rlog.Debug(fmt.Sprintf("db_recipients_string, ```%v```", db_recipients_string))
-	var actual_recipients []string = strings.Split(db_recipients_string, ",")
+	var actual_recipients []string = strings.Split(db_recipients_string, ", ")
 	rlog.Debug(fmt.Sprintf("actual_recipients, ```%v```", actual_recipients))
+
 	/// make display-recipients here
 	var display_recipients_string string = ""
 	for _, address := range actual_recipients {
-		rlog.Debug(fmt.Sprintf("address, ```%v```", address))
+		display_recipients_string = fmt.Sprintf("%v, <%v>", display_recipients_string, address)
 	}
-	rlog.Debug(fmt.Sprintf("display_recipients_string, ```%v```", display_recipients_string))
+	rlog.Debug(fmt.Sprintf("initial display_recipients_string, ```%v```", display_recipients_string))
+	display_recipients_string = strings.TrimSpace(display_recipients_string)
+	rlog.Debug(fmt.Sprintf("final display_recipients_string, ```%v```", display_recipients_string))
 	/// end of make-display-recipients
+
 	/// body stuff
 	var body string = make_failure_body(site)
 	/// assemble pieces
 	msg := []byte(
-		fmt.Sprintf("To: %v\r\n", db_recipients_string) +
+		fmt.Sprintf("To: %v\r\n", display_recipients_string) +
 			fmt.Sprintf("From: %v\r\n", display_sender_string) +
 			fmt.Sprintf("Subject: Service-Status alert: \"%v\" problem\r\n", site.name) +
 			"\r\n" +
